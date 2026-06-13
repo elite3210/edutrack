@@ -52,7 +52,6 @@ onUnmounted(() => {
       ref="inputRef"
       type="file"
       accept="image/*"
-      capture="environment"
       class="foto-input"
       @change="onChange"
     />

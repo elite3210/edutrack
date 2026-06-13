@@ -79,24 +79,61 @@ async function cargarActivo() {
     loading.value = false
   }
 }
-onMounted(cargarActivo)
+
+const SESSION_KEY = `rf_state_${route.params.codigo}`
+
+onMounted(async () => {
+  // Android Chrome puede recargar la página al volver de la cámara.
+  // Si hay estado guardado en sessionStorage, lo restauramos antes de continuar.
+  const saved = sessionStorage.getItem(SESSION_KEY)
+  if (saved) {
+    try {
+      const s = JSON.parse(saved)
+      step.value          = s.step ?? 1
+      form.descripcion    = s.descripcion ?? ''
+      form.docente_nombre = s.docente_nombre ?? ''
+      form.docente_email  = s.docente_email ?? ''
+      Object.assign(touched, s.touched ?? {})
+    } catch { /* ignorar estado corrupto */ }
+    sessionStorage.removeItem(SESSION_KEY)
+  }
+  await cargarActivo()
+})
 
 // ─── Foto opcional ────────────────────────────────────────────────
+function abrirCamara() {
+  // Guardamos el estado del formulario antes de abrir la cámara por si
+  // Android Chrome recarga la página al volver del selector de archivos.
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+    step:           step.value,
+    descripcion:    form.descripcion,
+    docente_nombre: form.docente_nombre,
+    docente_email:  form.docente_email,
+    touched:        { ...touched },
+  }))
+  fotoInputRef.value?.click()
+}
+
 function handleFoto(event) {
   const file = event.target.files?.[0]
   if (!file) return
-  form.foto = file
+  sessionStorage.removeItem(SESSION_KEY) // foto recibida, ya no necesitamos el guardado
+  form.foto         = file
   form.foto_preview = URL.createObjectURL(file)
 }
+
 function quitarFoto() {
   if (form.foto_preview) URL.revokeObjectURL(form.foto_preview)
-  form.foto = null
+  form.foto         = null
   form.foto_preview = null
 }
 
 // ─── Navegación entre pasos ──────────────────────────────────────
 function irAPaso2() { step.value = 2 }
-function volverPaso1() { step.value = 1 }
+function volverPaso1() {
+  sessionStorage.removeItem(SESSION_KEY)
+  step.value = 1
+}
 
 async function enviarReporte() {
   touched.descripcion = true
@@ -138,6 +175,7 @@ async function enviarReporte() {
 }
 
 function reiniciar() {
+  sessionStorage.removeItem(SESSION_KEY)
   Object.assign(form, {
     descripcion: '', docente_nombre: '', docente_email: '', foto: null, foto_preview: null,
   })
@@ -313,7 +351,7 @@ function reiniciar() {
               v-if="!form.foto_preview"
               type="button"
               class="rf-foto-empty"
-              @click="fotoInputRef.click()"
+              @click="abrirCamara"
             >
               <CameraIcon class="rf-foto-empty-icon" />
               <span class="rf-foto-empty-text">Toma una foto del equipo</span>
