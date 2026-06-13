@@ -310,15 +310,12 @@ onMounted(async () => {
 
 /* Filtros */
 .activos-filters {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 10px 14px;
-  margin-bottom: 16px;
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 @media (max-width: 900px) {
   .activos-filters { flex-direction: column; align-items: stretch; padding: 14px; }

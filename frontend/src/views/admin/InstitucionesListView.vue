@@ -261,15 +261,12 @@ function limpiar() { search.value = ''; estadoFiltro.value = '' }
 }
 
 .i-filters {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 12px 16px;
-  margin-bottom: 16px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 @media (max-width: 640px) { .i-filters { flex-direction: column; align-items: stretch; } }
 .i-search { position: relative; flex: 1; }
