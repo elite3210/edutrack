@@ -95,9 +95,9 @@ const tiempoLabel = computed(() => {
   border-radius: var(--radius-lg);
   align-items: center;
 }
-.alerta-card--rojo     { border-left: 4px solid var(--color-danger); }
-.alerta-card--naranja  { border-left: 4px solid var(--color-warning); }
-.alerta-card--amarillo { border-left: 4px solid #E0B400; }
+.alerta-card--rojo     { border-color: rgba(192, 57, 43, 0.3); }
+.alerta-card--naranja  { border-color: rgba(211, 84, 0, 0.3); }
+.alerta-card--amarillo { border-color: rgba(224, 180, 0, 0.3); }
 .alerta-card--atendida { opacity: 0.7; }
 
 .alerta-card-icon {

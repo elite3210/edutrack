@@ -84,8 +84,8 @@ const diasLabel = computed(() => {
   box-shadow: var(--shadow-sm);
 }
 .orden-card--vencida {
-  border-left: 3px solid var(--color-danger);
-  background: rgba(192,57,43,0.025);
+  border-color: rgba(192, 57, 43, 0.35);
+  background: rgba(192, 57, 43, 0.025);
 }
 
 .orden-card-head {

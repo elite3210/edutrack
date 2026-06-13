@@ -427,7 +427,7 @@ function exportarPDF() {
 }
 @media (max-width: 900px) { .pr-candidatos-grid { grid-template-columns: 1fr; } }
 
-.pr-candidato-card { border-left: 4px solid var(--color-danger); }
+.pr-candidato-card { border-color: rgba(192, 57, 43, 0.3); }
 .pr-candidato-head {
   display: flex;
   justify-content: space-between;

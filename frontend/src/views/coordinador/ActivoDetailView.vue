@@ -112,8 +112,15 @@ function tareaEstadoLabel(e) {
       <!-- Header -->
       <header class="detail-header">
         <div class="detail-header-main">
-          <span class="detail-categoria">{{ activo.categoria }}</span>
-          <h1 class="detail-title">{{ activo.nombre }}</h1>
+          <div class="detail-header-top">
+            <div class="detail-header-icon">
+              <CubeIcon />
+            </div>
+            <div>
+              <span class="detail-categoria">{{ activo.categoria }}</span>
+              <h1 class="detail-title">{{ activo.nombre }}</h1>
+            </div>
+          </div>
           <div class="detail-meta">
             <span class="detail-meta-item">
               <CubeIcon class="detail-icon-sm" />
@@ -123,7 +130,10 @@ function tareaEstadoLabel(e) {
               <MapPinIcon class="detail-icon-sm" />
               {{ activo.ubicacion }}
             </span>
-            <EduBadge :variant="estadoVariant" size="sm">{{ estadoLabel }}</EduBadge>
+            <EduBadge :variant="estadoVariant" size="md">{{ estadoLabel }}</EduBadge>
+          </div>
+          <div v-if="activo.numero_serie" class="detail-serie">
+            S/N: <strong>{{ activo.numero_serie }}</strong>
           </div>
         </div>
         <div class="detail-header-actions">
@@ -144,11 +154,14 @@ function tareaEstadoLabel(e) {
           <div class="detail-score-content">
             <div class="detail-score-ring">
               <EduScoreRing :score="activo.score" size="lg" show-label />
-              <p class="detail-score-help">Score de salud del equipo, de 0 a 100.</p>
+              <p class="detail-score-help">Score de salud calculado<br>por el motor EduTrack AI.</p>
             </div>
             <div class="detail-factores">
               <p class="detail-factores-title">Desglose del score</p>
-              <ul class="detail-factores-list">
+              <div v-if="factores.length === 0" class="detail-factores-empty">
+                Sin datos de plan de mantenimiento aún. El score se calculará cuando se registren intervenciones.
+              </div>
+              <ul v-else class="detail-factores-list">
                 <li v-for="f in factores" :key="f.key" class="detail-factor">
                   <div class="detail-factor-head">
                     <span class="detail-factor-label">{{ f.label }}</span>
@@ -223,9 +236,9 @@ function tareaEstadoLabel(e) {
                 <EduBadge :variant="estadoVariant" size="sm">{{ estadoLabel }}</EduBadge>
               </strong>
             </li>
-            <li v-if="activo.numero_serie">
+            <li>
               <span>Número de serie</span>
-              <strong>{{ activo.numero_serie }}</strong>
+              <strong>{{ activo.numero_serie || '—' }}</strong>
             </li>
             <li v-if="activo.notas">
               <span>Notas</span>
@@ -325,6 +338,25 @@ function tareaEstadoLabel(e) {
   margin-bottom: 24px;
   flex-wrap: wrap;
 }
+.detail-header-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+.detail-header-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.detail-header-icon :deep(svg) { width: 24px; height: 24px; }
 .detail-categoria {
   display: inline-block;
   font-size: 11px;
@@ -335,20 +367,21 @@ function tareaEstadoLabel(e) {
   background: var(--color-primary-light);
   padding: 3px 10px;
   border-radius: 9999px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 .detail-title {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 700;
-  letter-spacing: -0.6px;
+  letter-spacing: -0.5px;
   color: var(--color-text-primary);
-  margin: 0 0 10px;
+  margin: 0;
 }
 .detail-meta {
   display: flex;
   align-items: center;
   gap: 14px;
   flex-wrap: wrap;
+  margin-bottom: 8px;
 }
 .detail-meta-item {
   display: inline-flex;
@@ -356,6 +389,15 @@ function tareaEstadoLabel(e) {
   gap: 5px;
   font-size: 13px;
   color: var(--color-text-secondary);
+}
+.detail-serie {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.detail-serie strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 .detail-header-actions {
   display: flex;
@@ -405,6 +447,14 @@ function tareaEstadoLabel(e) {
   letter-spacing: 0.5px;
   color: var(--color-text-secondary);
   margin: 0 0 12px;
+}
+.detail-factores-empty {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  padding: 16px;
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
 }
 .detail-factores-list {
   list-style: none;

@@ -480,7 +480,7 @@ function irAEjecutar() {
 }
 
 .ot-card--cierre {
-  border-left: 4px solid var(--color-success);
+  border-color: rgba(30, 132, 73, 0.3);
 }
 .ot-cierre-fecha {
   font-size: 12px;

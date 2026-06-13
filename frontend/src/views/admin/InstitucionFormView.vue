@@ -293,7 +293,7 @@ onMounted(async () => {
         </EduCard>
 
         <div class="if-actions">
-          <EduButton variant="primary" type="submit" :loading="submitting" @click="onSubmit">
+          <EduButton variant="primary" type="submit" :loading="submitting">
             <CheckCircleIcon class="if-icon" />
             {{ isEdit ? 'Guardar cambios' : 'Crear institución' }}
           </EduButton>

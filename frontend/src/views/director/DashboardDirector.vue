@@ -104,8 +104,14 @@ onUnmounted(() => { if (timer) clearInterval(timer) })
 
     <!-- Filtros -->
     <div class="dd-filters">
-      <EduSelect v-model="categoriaFiltro" :options="categoriaOptions" />
-      <EduSelect v-model="edificioFiltro"  :options="edificioOptions" />
+      <div>
+        <EduSelect v-model="categoriaFiltro" :options="categoriaOptions" />
+        <p class="dd-filter-hint">Filtra métricas y top críticos</p>
+      </div>
+      <div>
+        <EduSelect v-model="edificioFiltro" :options="edificioOptions" />
+        <p class="dd-filter-hint">Filtra el mapa de calor</p>
+      </div>
     </div>
 
     <!-- Métricas -->
@@ -271,6 +277,11 @@ onUnmounted(() => { if (timer) clearInterval(timer) })
   grid-template-columns: 240px 240px;
   gap: 12px;
   margin-bottom: 22px;
+}
+.dd-filter-hint {
+  font-size: 11px;
+  color: var(--color-text-disabled);
+  margin: 4px 0 0;
 }
 @media (max-width: 640px) { .dd-filters { grid-template-columns: 1fr; } }
 

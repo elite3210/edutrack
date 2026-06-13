@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useAlertasStore } from '@/stores/alertas'
@@ -9,8 +9,11 @@ import {
   ChevronDownIcon,
   ArrowRightOnRectangleIcon,
   UserIcon,
+  FireIcon,
+  ExclamationTriangleIcon,
+  ClockIcon,
 } from '@heroicons/vue/24/outline'
-import { ref } from 'vue'
+import logoTexto from '@/assets/img/logo-texto.png'
 
 const auth    = useAuthStore()
 const alertas = useAlertasStore()
@@ -20,6 +23,7 @@ const route   = useRoute()
 const navItems = computed(() => {
   const rol = auth.user?.rol
   if (rol === 'coordinador') return [
+    { label: 'Dashboard', to: '/coordinador/dashboard' },
     { label: 'Activos',  to: '/coordinador/activos' },
     { label: 'Órdenes', to: '/coordinador/ordenes' },
     { label: 'Alertas', to: '/coordinador/alertas' },
@@ -40,10 +44,40 @@ function isActive(to) {
   return route.path.startsWith(to)
 }
 
-function irACampana() {
-  if (auth.user?.rol === 'coordinador') router.push('/coordinador/alertas')
+// ── Notification dropdown ──────────────────────────────────
+const notifOpen = ref(false)
+
+function clasificar(a) {
+  if (a.tipo === 'riesgo_falla') return 'rojo'
+  if (a.dias_restantes === null || a.dias_restantes === undefined) return 'amarillo'
+  if (a.dias_restantes < 0)  return 'rojo'
+  if (a.dias_restantes <= 5) return 'naranja'
+  return 'amarillo'
 }
 
+function tiempoLabel(a) {
+  const d = a.dias_restantes
+  if (d === null || d === undefined) return 'Riesgo'
+  if (d < 0)  return `Vencido hace ${Math.abs(d)}d`
+  if (d === 0) return 'Hoy'
+  return `En ${d}d`
+}
+
+const notifIconMap = { rojo: FireIcon, naranja: ExclamationTriangleIcon, amarillo: ClockIcon }
+
+const isCoordinador = computed(() => auth.user?.rol === 'coordinador')
+
+async function toggleNotif() {
+  if (!isCoordinador.value) return
+  notifOpen.value = !notifOpen.value
+  if (notifOpen.value && alertas.list.length === 0) {
+    await alertas.fetchAll()
+  }
+}
+
+const top5 = computed(() => alertas.pendientes.slice(0, 5))
+
+// ── User menu ──────────────────────────────────────────────
 const menuOpen = ref(false)
 
 function logout() {
@@ -56,8 +90,7 @@ function logout() {
   <header class="top-nav">
     <!-- Logo -->
     <RouterLink to="/" class="nav-logo">
-      <span class="nav-logo-icon">ET</span>
-      <span class="nav-logo-text">EduTrack <span>AI</span></span>
+      <img :src="logoTexto" alt="EduTrack AI" class="nav-logo-img" />
     </RouterLink>
 
     <!-- Nav items -->
@@ -74,13 +107,51 @@ function logout() {
 
     <!-- Acciones -->
     <div class="nav-actions">
-      <!-- Campana -->
-      <button class="nav-icon-btn" title="Alertas" @click="irACampana">
-        <BellIcon class="icon-md" />
-        <span v-if="alertas.totalPendientes > 0" class="nav-badge">
-          {{ alertas.totalPendientes > 9 ? '9+' : alertas.totalPendientes }}
-        </span>
-      </button>
+      <!-- Campana con dropdown -->
+      <div class="relative">
+        <button class="nav-icon-btn" title="Notificaciones" @click="toggleNotif">
+          <BellIcon class="icon-md" />
+          <span v-if="alertas.totalPendientes > 0" class="nav-badge">
+            {{ alertas.totalPendientes > 9 ? '9+' : alertas.totalPendientes }}
+          </span>
+        </button>
+
+        <Transition name="dropdown">
+          <div v-if="notifOpen" class="notif-dropdown" v-click-outside="() => notifOpen = false">
+            <div class="notif-header">
+              <span class="notif-header-title">Alertas pendientes</span>
+              <span class="notif-header-count">{{ alertas.totalPendientes }}</span>
+            </div>
+            <div v-if="alertas.loading" class="notif-loading">Cargando…</div>
+            <div v-else-if="top5.length === 0" class="notif-empty">
+              Sin alertas pendientes
+            </div>
+            <ul v-else class="notif-list">
+              <li
+                v-for="a in top5"
+                :key="a.id"
+                class="notif-item"
+                @click="router.push(`/coordinador/alertas`); notifOpen = false"
+              >
+                <div :class="['notif-dot', `notif-dot--${clasificar(a)}`]">
+                  <component :is="notifIconMap[clasificar(a)]" />
+                </div>
+                <div class="notif-body">
+                  <p class="notif-nombre">{{ a.activo_nombre }}</p>
+                  <p class="notif-meta">{{ tiempoLabel(a) }} · {{ a.ubicacion }}</p>
+                </div>
+              </li>
+            </ul>
+            <RouterLink
+              to="/coordinador/alertas"
+              class="notif-ver-todas"
+              @click="notifOpen = false"
+            >
+              Ver todas las alertas
+            </RouterLink>
+          </div>
+        </Transition>
+      </div>
 
       <!-- Menú usuario -->
       <div class="relative">
@@ -131,30 +202,14 @@ function logout() {
 .nav-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
   text-decoration: none;
   flex-shrink: 0;
 }
-.nav-logo-icon {
-  width: 36px;
-  height: 36px;
-  background: var(--color-primary);
-  color: #fff;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-.nav-logo-text {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--color-text-primary);
-}
-.nav-logo-text span {
-  color: var(--color-primary);
+.nav-logo-img {
+  height: 30px;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
 .nav-items {
@@ -276,6 +331,102 @@ function logout() {
 .icon-sm { width: 16px; height: 16px; }
 .icon-md { width: 20px; height: 20px; }
 .icon-lg { width: 24px; height: 24px; }
+
+/* Notification dropdown */
+.notif-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 300px;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  z-index: 200;
+}
+.notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+.notif-header-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+.notif-header-count {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  font-variant-numeric: tabular-nums;
+}
+.notif-loading, .notif-empty {
+  padding: 20px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+.notif-list {
+  list-style: none;
+  padding: 6px 0;
+  margin: 0;
+}
+.notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.notif-item:hover { background: var(--color-bg); }
+.notif-dot {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+.notif-dot :deep(svg) { width: 15px; height: 15px; }
+.notif-dot--rojo     { background: var(--color-danger-bg);  color: var(--color-danger); }
+.notif-dot--naranja  { background: var(--color-warning-bg); color: var(--color-warning); }
+.notif-dot--amarillo { background: #FFF8DA; color: #9A7800; }
+.notif-body { flex: 1; min-width: 0; }
+.notif-nombre {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.notif-meta {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin: 2px 0 0;
+}
+.notif-ver-todas {
+  display: block;
+  text-align: center;
+  padding: 11px 16px;
+  border-top: 1px solid var(--color-border);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: background var(--transition-fast);
+}
+.notif-ver-todas:hover { background: var(--color-primary-light); }
 
 /* Dropdown transition */
 .dropdown-enter-active, .dropdown-leave-active { transition: opacity 150ms, transform 150ms; }

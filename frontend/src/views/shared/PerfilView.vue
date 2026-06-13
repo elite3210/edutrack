@@ -317,13 +317,6 @@ async function copiarToken(texto) {
         </ul>
       </EduCard>
 
-      <!-- Placeholder preferencias -->
-      <EduCard class="pf-card pf-card--soft">
-        <p class="pf-soon">
-          <InformationCircleIcon class="pf-icon-sm" />
-          Las preferencias (idioma, notificaciones por email) llegarán en próximas versiones.
-        </p>
-      </EduCard>
     </div>
 
     <!-- Modal crear token -->
@@ -407,9 +400,7 @@ async function copiarToken(texto) {
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
-.pf-card--wide  { grid-column: 1 / -1; }
-.pf-card--soft  { grid-column: 1 / -1; background: transparent; border: 1px dashed var(--color-border); }
-.pf-card--soft :deep(.edu-card) { box-shadow: none; }
+.pf-card--wide { grid-column: 1 / -1; }
 
 @media (max-width: 768px) { .pf-grid { grid-template-columns: 1fr; } }
 
@@ -581,17 +572,6 @@ async function copiarToken(texto) {
 }
 @media (max-width: 480px) {
   .pf-token-revoke-label { display: none; }
-}
-
-/* Card soft (placeholder preferencias) */
-.pf-soon {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  font-size: 13px;
-  color: var(--color-text-secondary);
-  margin: 0;
-  font-style: italic;
 }
 
 /* Modal */

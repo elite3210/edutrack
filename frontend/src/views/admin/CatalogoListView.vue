@@ -298,13 +298,15 @@ function limpiar() { search.value = ''; categoriaFiltro.value = '' }
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 12px 16px;
   margin-bottom: 16px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   gap: 12px;
 }
-.cl-search { position: relative; }
+@media (max-width: 640px) { .cl-filters { flex-direction: column; align-items: stretch; } }
+.cl-search { position: relative; flex: 1; }
 .cl-search-icon {
   position: absolute; top: 50%; left: 14px;
   transform: translateY(-50%); width: 18px; height: 18px;
@@ -334,10 +336,10 @@ function limpiar() { search.value = ''; categoriaFiltro.value = '' }
 }
 .cl-search-clear:hover { background: var(--color-primary-light); color: var(--color-primary); }
 .cl-filter-group {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px;
-  align-items: end;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
 }
 .cl-filter-clear {
   height: 44px;

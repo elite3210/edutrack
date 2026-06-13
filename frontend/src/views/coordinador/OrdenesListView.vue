@@ -168,7 +168,7 @@ onMounted(async () => {
       </button>
     </nav>
 
-    <!-- Filtros -->
+    <!-- Filtros en una sola fila -->
     <div class="ordenes-filters">
       <div class="ordenes-search">
         <MagnifyingGlassIcon class="ordenes-search-icon" />
@@ -176,7 +176,7 @@ onMounted(async () => {
           v-model="search"
           type="text"
           class="ordenes-search-input"
-          placeholder="Buscar por número, equipo, técnico o descripción…"
+          placeholder="Buscar equipo, técnico, OT…"
         />
         <button
           v-if="search"
@@ -188,18 +188,16 @@ onMounted(async () => {
           <XMarkIcon class="ordenes-icon" />
         </button>
       </div>
-      <div class="ordenes-filter-group">
-        <EduSelect v-model="prioridadFiltro" placeholder="Prioridad" :options="prioridadOptions" />
-        <EduSelect v-model="tecnicoFiltro"   placeholder="Técnico"   :options="tecnicosOptions" />
-        <button
-          v-if="hayFiltrosActivos"
-          type="button"
-          class="ordenes-filter-clear"
-          @click="limpiarFiltros"
-        >
-          Limpiar filtros
-        </button>
-      </div>
+      <EduSelect v-model="prioridadFiltro" placeholder="Prioridad" :options="prioridadOptions" class="ordenes-filter-select" />
+      <EduSelect v-model="tecnicoFiltro"   placeholder="Técnico"   :options="tecnicosOptions" class="ordenes-filter-select" />
+      <button
+        v-if="hayFiltrosActivos"
+        type="button"
+        class="ordenes-filter-clear"
+        @click="limpiarFiltros"
+      >
+        Limpiar
+      </button>
     </div>
 
     <!-- Tabla -->
@@ -261,11 +259,11 @@ onMounted(async () => {
         </template>
 
         <template #cell-prioridad="{ value }">
-          <PrioridadBadge :prioridad="value" size="sm" />
+          <PrioridadBadge :prioridad="value" size="md" />
         </template>
 
         <template #cell-estado="{ value }">
-          <EstadoBadge :estado="value" size="sm" />
+          <EstadoBadge :estado="value" size="md" />
         </template>
 
         <template #cell-fecha_limite="{ row }">
@@ -379,24 +377,26 @@ onMounted(async () => {
 
 /* Filtros */
 .ordenes-filters {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 16px;
-  margin-bottom: 16px;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
-.ordenes-search { position: relative; }
+.ordenes-search {
+  flex: 1;
+  min-width: 180px;
+  position: relative;
+}
 .ordenes-search-icon {
-  position: absolute; top: 50%; left: 14px;
-  transform: translateY(-50%); width: 18px; height: 18px;
+  position: absolute; top: 50%; left: 12px;
+  transform: translateY(-50%); width: 16px; height: 16px;
   color: var(--color-text-disabled);
+  pointer-events: none;
 }
 .ordenes-search-input {
-  width: 100%; height: 44px;
-  padding: 0 44px;
+  width: 100%; height: 40px;
+  padding: 0 38px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   font-size: 14px;
@@ -411,10 +411,10 @@ onMounted(async () => {
   box-shadow: var(--shadow-ring);
 }
 .ordenes-search-clear {
-  position: absolute; top: 50%; right: 8px;
-  transform: translateY(-50%); width: 28px; height: 28px;
+  position: absolute; top: 50%; right: 6px;
+  transform: translateY(-50%); width: 26px; height: 26px;
   border: none; background: var(--color-bg);
-  border-radius: 6px; cursor: pointer;
+  border-radius: 5px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   color: var(--color-text-secondary);
 }
@@ -422,15 +422,13 @@ onMounted(async () => {
   background: var(--color-primary-light);
   color: var(--color-primary);
 }
-.ordenes-filter-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 12px;
-  align-items: end;
+.ordenes-filter-select {
+  width: 160px;
+  flex-shrink: 0;
 }
 .ordenes-filter-clear {
-  height: 44px;
-  padding: 0 14px;
+  height: 40px;
+  padding: 0 12px;
   border: 1px dashed var(--color-border);
   background: transparent;
   border-radius: var(--radius-md);
@@ -440,13 +438,20 @@ onMounted(async () => {
   font-weight: 500;
   color: var(--color-text-secondary);
   transition: all var(--transition-fast);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 .ordenes-filter-clear:hover {
   border-color: var(--color-danger);
   color: var(--color-danger);
 }
-@media (max-width: 768px) { .ordenes-filter-group { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 480px) { .ordenes-filter-group { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .ordenes-filter-select { width: 130px; }
+}
+@media (max-width: 480px) {
+  .ordenes-filters { gap: 8px; }
+  .ordenes-filter-select { width: 100%; flex: 1; min-width: 120px; }
+}
 
 /* Celdas */
 .cell-numero {

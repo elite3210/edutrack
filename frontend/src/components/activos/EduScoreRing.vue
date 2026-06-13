@@ -23,16 +23,16 @@ const label         = computed(() => getScoreLabel(props.score))
 </script>
 
 <template>
-  <div class="ring">
+  <div class="score-ring">
     <svg
       :width="dim.diameter"
       :height="dim.diameter"
       :viewBox="`0 0 ${dim.diameter} ${dim.diameter}`"
-      class="ring-svg"
+      class="score-ring-svg"
     >
       <g :transform="`rotate(-90 ${dim.diameter / 2} ${dim.diameter / 2})`">
         <circle
-          class="ring-track"
+          class="score-ring-track"
           :cx="dim.diameter / 2"
           :cy="dim.diameter / 2"
           :r="radius"
@@ -40,7 +40,7 @@ const label         = computed(() => getScoreLabel(props.score))
           fill="none"
         />
         <circle
-          class="ring-progress"
+          class="score-ring-progress"
           :cx="dim.diameter / 2"
           :cy="dim.diameter / 2"
           :r="radius"
@@ -58,36 +58,36 @@ const label         = computed(() => getScoreLabel(props.score))
         text-anchor="middle"
         dominant-baseline="central"
         :style="{ fontSize: `${dim.fontSize}px`, fill: color }"
-        class="ring-text"
+        class="score-ring-text"
       >
         {{ score }}
       </text>
     </svg>
-    <span v-if="showLabel" class="ring-label" :style="{ color }">{{ label }}</span>
+    <span v-if="showLabel" class="score-ring-label" :style="{ color }">{{ label }}</span>
   </div>
 </template>
 
 <style scoped>
-.ring {
+.score-ring {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
 }
-.ring-svg {
+.score-ring-svg {
   display: block;
 }
-.ring-track {
+.score-ring-track {
   stroke: var(--color-border);
 }
-.ring-progress {
+.score-ring-progress {
   transition: stroke-dashoffset 600ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.ring-text {
+.score-ring-text {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
-.ring-label {
+.score-ring-label {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;

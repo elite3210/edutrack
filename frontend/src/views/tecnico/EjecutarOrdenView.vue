@@ -39,6 +39,7 @@ const activo  = computed(() => activos.list.find(a => a.id === orden.value?.acti
 const step = ref(1) // 1 verificar | 2 evidencias | 3 cierre
 const qrVerificado = ref(false)
 const fotos = ref([]) // File[]
+const notaEvidencia = ref('')
 const descripcionCierre = ref('')
 const showConfirmar = ref(false)
 const cerrando = ref(false)
@@ -98,6 +99,7 @@ async function confirmarCierre() {
   const payload = {
     estado:             'cerrada',
     descripcion_cierre: descripcionCierre.value.trim(),
+    nota_evidencia:     notaEvidencia.value.trim() || null,
     cerrada_en:         new Date().toISOString().split('T')[0],
     usuario:            auth.user?.nombre,
     evidencias:         fotos.value.map((f, i) => ({ id: `ev-${Date.now()}-${i}`, nombre: f.name })),
@@ -221,6 +223,18 @@ const pasos = [
 
         <EvidenciaUploader v-model="fotos" :min-fotos="2" :max-fotos="4" />
 
+        <div class="ej-nota-wrap">
+          <label class="ej-nota-label" for="ej-nota">Nota de la intervención (opcional)</label>
+          <textarea
+            id="ej-nota"
+            v-model="notaEvidencia"
+            class="ej-nota-textarea"
+            placeholder="Observaciones del estado del equipo, materiales utilizados, anomalías encontradas…"
+            rows="3"
+            maxlength="400"
+          />
+        </div>
+
         <div class="ej-cta">
           <EduButton
             variant="primary"
@@ -292,6 +306,10 @@ const pasos = [
         <li>
           <span>Fotos adjuntas</span>
           <strong>{{ fotos.length }}</strong>
+        </li>
+        <li v-if="notaEvidencia">
+          <span>Nota adjunta</span>
+          <strong class="ej-resumen-nota">Sí</strong>
         </li>
         <li>
           <span>Hora de cierre</span>
@@ -535,4 +553,38 @@ const pasos = [
 .ej-resumen li span { color: var(--color-text-secondary); }
 .ej-resumen li strong { color: var(--color-text-primary); font-weight: 600; }
 .ej-resumen-offline { color: var(--color-warning) !important; }
+.ej-resumen-nota { color: var(--color-success) !important; }
+
+.ej-nota-wrap {
+  margin-top: 18px;
+}
+.ej-nota-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+.ej-nota-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color var(--transition-fast);
+  line-height: 1.5;
+}
+.ej-nota-textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+.ej-nota-textarea::placeholder {
+  color: var(--color-text-disabled);
+}
 </style>

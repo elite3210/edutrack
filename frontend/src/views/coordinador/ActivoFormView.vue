@@ -345,7 +345,7 @@ onMounted(async () => {
         </EduCard>
 
         <p class="form-tip">
-          💡 Al registrar el activo se generará un código QR único.
+          Al registrar el activo se generará un código QR único.
           Imprímelo y pégalo en el equipo para que los docentes puedan
           reportar fallas escaneándolo desde el celular.
         </p>
@@ -509,12 +509,12 @@ onMounted(async () => {
 .form-tip {
   font-size: 12px;
   color: var(--color-text-secondary);
-  background: var(--color-primary-light);
+  background: var(--color-bg);
   padding: 12px 14px;
   border-radius: var(--radius-md);
   margin: 0;
   line-height: 1.55;
-  border-left: 3px solid var(--color-primary);
+  border: 1px solid var(--color-border);
 }
 
 /* Pantalla de éxito */

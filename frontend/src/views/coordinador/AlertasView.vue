@@ -12,6 +12,7 @@ import {
   ExclamationTriangleIcon,
   ClockIcon,
   CheckCircleIcon,
+  InformationCircleIcon,
 } from '@heroicons/vue/24/outline'
 
 const router  = useRouter()
@@ -39,24 +40,24 @@ const proximas15 = computed(() => pendientes.value.filter(a => clasificar(a) ===
 const secciones = computed(() => [
   {
     key:   'vencidas',
-    label: 'Vencidos / Riesgo',
-    descripcion: 'Atención inmediata',
+    label: 'Crítico — Intervención inmediata',
+    descripcion: 'Mantenimientos vencidos o equipos con riesgo de falla',
     color: 'rojo',
     icon:  FireIcon,
     alertas: vencidas.value,
   },
   {
     key:   'proximas5',
-    label: 'Próximos 5 días',
-    descripcion: 'Esta semana',
+    label: 'Urgente — Esta semana',
+    descripcion: 'Mantenimientos que vencen en los próximos 5 días',
     color: 'naranja',
     icon:  ExclamationTriangleIcon,
     alertas: proximas5.value,
   },
   {
     key:   'proximas15',
-    label: 'Próximos 15 días',
-    descripcion: 'A planificar',
+    label: 'Próximo — Planificar ahora',
+    descripcion: 'Mantenimientos que vencen en los próximos 15 días',
     color: 'amarillo',
     icon:  ClockIcon,
     alertas: proximas15.value,
@@ -101,6 +102,15 @@ onMounted(async () => {
         </p>
       </div>
     </header>
+
+    <div v-if="!alertas.loading && totalPendientes > 0" class="alertas-intro">
+      <InformationCircleIcon class="alertas-intro-icon" />
+      <p class="alertas-intro-text">
+        El motor EduTrack AI analiza el ciclo de vida de cada equipo y genera estas alertas automáticamente.
+        Atiende primero las secciones <strong>Crítico</strong> y <strong>Urgente</strong> — representan mantenimientos vencidos
+        o equipos en riesgo de falla que afectan la operación del colegio.
+      </p>
+    </div>
 
     <!-- Loading -->
     <div v-if="alertas.loading && alertas.list.length === 0" class="alertas-skeletons">
@@ -172,7 +182,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.alertas-header { margin-bottom: 20px; }
+.alertas-header { margin-bottom: 12px; }
 .alertas-title {
   font-size: 26px;
   font-weight: 700;
@@ -184,6 +194,30 @@ onMounted(async () => {
   font-size: 13.5px;
   color: var(--color-text-secondary);
   margin: 0;
+}
+
+.alertas-intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--color-info-bg);
+  border: 1px solid rgba(41, 128, 185, 0.2);
+  border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+}
+.alertas-intro-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--color-info);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.alertas-intro-text {
+  font-size: 13px;
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.55;
 }
 
 .alertas-skeletons {
@@ -208,11 +242,14 @@ onMounted(async () => {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  border-left-width: 4px;
 }
-.alerta-seccion--rojo     { border-left-color: var(--color-danger); }
-.alerta-seccion--naranja  { border-left-color: var(--color-warning); }
-.alerta-seccion--amarillo { border-left-color: #E0B400; }
+.alerta-seccion--rojo    { border-color: rgba(192, 57, 43, 0.25); }
+.alerta-seccion--naranja { border-color: rgba(211, 84, 0, 0.25); }
+.alerta-seccion--amarillo { border-color: rgba(224, 180, 0, 0.25); }
+
+.alerta-seccion--rojo    .alerta-seccion-head { background: rgba(192, 57, 43, 0.03); }
+.alerta-seccion--naranja .alerta-seccion-head { background: rgba(211, 84, 0, 0.03); }
+.alerta-seccion--amarillo .alerta-seccion-head { background: rgba(224, 180, 0, 0.02); }
 
 .alerta-seccion-head {
   display: grid;

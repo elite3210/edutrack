@@ -80,7 +80,7 @@ onMounted(async () => {
     <header class="dashboard-header">
       <div>
         <p class="dashboard-eyebrow">{{ greeting }},</p>
-        <h1 class="dashboard-title">{{ nombre }} 👋</h1>
+        <h1 class="dashboard-title">{{ nombre }}</h1>
         <p class="dashboard-subtitle">
           Aquí está el resumen de los activos de tu institución.
         </p>
@@ -158,8 +158,8 @@ onMounted(async () => {
         </div>
         <EmptyState
           v-else-if="alertasRecientes.length === 0"
-          title="Sin alertas activas"
-          description="Todos los mantenimientos están al día."
+          title="Sin alertas pendientes"
+          description="El motor EduTrack AI monitorea tus equipos y aparecerán aquí cuando requieran atención."
         />
         <ul v-else class="dashboard-list">
           <li v-for="a in alertasRecientes" :key="a.id" class="dashboard-list-item">
@@ -212,7 +212,7 @@ onMounted(async () => {
         <EmptyState
           v-else-if="otsAbiertas.length === 0"
           title="Sin órdenes abiertas"
-          description="No hay trabajo pendiente."
+          description="Crea una orden de trabajo para asignar una intervención técnica a un equipo."
         />
         <ul v-else class="dashboard-list">
           <li
@@ -304,6 +304,8 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1;
+  min-width: 0;
 }
 .dashboard-panel-title h2 {
   font-size: 16px;

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore }    from '@/stores/auth'
 import { useOrdenesStore } from '@/stores/ordenes'
@@ -62,6 +62,21 @@ function abrirOrden(orden) {
   router.push(`/tecnico/ordenes/${orden.id}`)
 }
 
+const tabKeys = tabs.map(t => t.key)
+function handleTabKeydown(event, currentKey) {
+  const idx = tabKeys.indexOf(currentKey)
+  let next = null
+  if (event.key === 'ArrowRight') next = tabKeys[(idx + 1) % tabKeys.length]
+  else if (event.key === 'ArrowLeft') next = tabKeys[(idx - 1 + tabKeys.length) % tabKeys.length]
+  else if (event.key === 'Home') next = tabKeys[0]
+  else if (event.key === 'End')  next = tabKeys[tabKeys.length - 1]
+  if (next) {
+    event.preventDefault()
+    tab.value = next
+    nextTick(() => document.getElementById(`mo-tab-${next}`)?.focus())
+  }
+}
+
 const mensajeVacio = computed(() => ({
   activas:      { titulo: '¡Todo al día!',           texto: 'No tienes órdenes pendientes en este momento.' },
   en_ejecucion: { titulo: 'Sin trabajos activos',     texto: 'No tienes órdenes en ejecución.' },
@@ -83,15 +98,19 @@ onMounted(async () => {
       </p>
     </header>
 
-    <nav class="mo-tabs" role="tablist">
+    <nav class="mo-tabs" role="tablist" aria-label="Estado de órdenes">
       <button
         v-for="t in tabs"
         :key="t.key"
+        :id="`mo-tab-${t.key}`"
         :class="['mo-tab', { 'mo-tab--active': tab === t.key }]"
         type="button"
         role="tab"
         :aria-selected="tab === t.key"
+        :aria-controls="`mo-panel-${t.key}`"
+        :tabindex="tab === t.key ? 0 : -1"
         @click="tab = t.key"
+        @keydown="handleTabKeydown($event, t.key)"
       >
         <component :is="t.icon" class="mo-icon" />
         <span>{{ t.label }}</span>
@@ -99,21 +118,29 @@ onMounted(async () => {
       </button>
     </nav>
 
-    <div v-if="ordenes.loading && ordenes.list.length === 0" class="mo-skeletons">
-      <SkeletonLoader v-for="n in 3" :key="n" width="100%" height="120px" />
+    <div
+      :id="`mo-panel-${tab}`"
+      role="tabpanel"
+      :aria-labelledby="`mo-tab-${tab}`"
+      tabindex="0"
+      class="mo-panel"
+    >
+      <div v-if="ordenes.loading && ordenes.list.length === 0" class="mo-skeletons">
+        <SkeletonLoader v-for="n in 3" :key="n" width="100%" height="120px" />
+      </div>
+
+      <EmptyState
+        v-else-if="filtradas.length === 0"
+        :title="mensajeVacio.titulo"
+        :description="mensajeVacio.texto"
+      />
+
+      <ul v-else class="mo-list">
+        <li v-for="o in filtradas" :key="o.id" class="mo-list-item">
+          <OrdenCard :orden="o" @click="abrirOrden" />
+        </li>
+      </ul>
     </div>
-
-    <EmptyState
-      v-else-if="filtradas.length === 0"
-      :title="mensajeVacio.titulo"
-      :description="mensajeVacio.texto"
-    />
-
-    <ul v-else class="mo-list">
-      <li v-for="o in filtradas" :key="o.id" class="mo-list-item">
-        <OrdenCard :orden="o" @click="abrirOrden" />
-      </li>
-    </ul>
   </MobileShell>
 </template>
 
@@ -186,6 +213,7 @@ onMounted(async () => {
   color: white;
 }
 
+.mo-panel { outline: none; }
 .mo-skeletons {
   display: flex;
   flex-direction: column;

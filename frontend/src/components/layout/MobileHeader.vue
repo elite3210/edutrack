@@ -1,6 +1,7 @@
 <script setup>
 import { Bars3Icon, BellIcon } from '@heroicons/vue/24/outline'
 import { useAlertasStore } from '@/stores/alertas'
+import logoTexto from '@/assets/img/logo-texto.png'
 
 defineProps({
   title: { type: String, default: '' },
@@ -16,7 +17,13 @@ const alertas = useAlertasStore()
       <Bars3Icon class="icon-lg" />
     </button>
 
-    <h1 class="mobile-header-title">{{ title || 'EduTrack' }}</h1>
+    <div class="mobile-header-brand">
+      <template v-if="title">
+        <span class="mobile-header-logo">ET</span>
+        <span class="mobile-header-title">{{ title }}</span>
+      </template>
+      <img v-else :src="logoTexto" alt="EduTrack AI" class="mobile-header-logo-img" />
+    </div>
 
     <button class="mobile-header-btn" aria-label="Notificaciones">
       <BellIcon class="icon-lg" />
@@ -53,20 +60,47 @@ const alertas = useAlertasStore()
   cursor: pointer;
   color: var(--color-text-primary);
   transition: background var(--transition-fast);
+  flex-shrink: 0;
 }
 .mobile-header-btn:active { background: var(--color-bg); }
-.mobile-header-title {
+
+.mobile-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex: 1;
-  text-align: center;
-  font-size: 16px;
+  justify-content: center;
+  min-width: 0;
+}
+.mobile-header-logo {
+  width: 28px;
+  height: 28px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+.mobile-header-logo-img {
+  height: 22px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+.mobile-header-title {
+  font-size: 15px;
   font-weight: 600;
   color: var(--color-text-primary);
-  margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 0 8px;
 }
+
 .mobile-badge {
   position: absolute;
   top: 6px;

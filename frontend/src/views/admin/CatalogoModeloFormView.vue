@@ -371,7 +371,7 @@ onMounted(async () => {
             />
             <label for="manual-input" class="cm-pdf-trigger">
               <DocumentArrowUpIcon class="cm-pdf-icon" />
-              <span class="cm-pdf-text">Toca para seleccionar un PDF</span>
+              <span class="cm-pdf-text">Selecciona un archivo PDF</span>
             </label>
           </div>
 
@@ -432,7 +432,7 @@ onMounted(async () => {
         </EduCard>
 
         <div class="cm-actions">
-          <EduButton variant="primary" type="submit" :loading="submitting" @click="onSubmit">
+          <EduButton variant="primary" type="submit" :loading="submitting">
             <CheckCircleIcon class="cm-icon" />
             {{ isEdit ? 'Guardar cambios' : 'Crear modelo' }}
           </EduButton>

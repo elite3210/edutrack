@@ -66,10 +66,7 @@ function volver() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(circle at 20% 20%, var(--color-primary-light) 0%, transparent 35%),
-    radial-gradient(circle at 80% 80%, rgba(100, 0, 190, 0.08) 0%, transparent 40%),
-    var(--color-bg);
+  background: var(--color-bg);
   padding: 24px;
   padding-top: max(24px, env(safe-area-inset-top));
   padding-bottom: max(24px, env(safe-area-inset-bottom));

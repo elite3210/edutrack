@@ -37,8 +37,8 @@ const meta = computed(() => ({
   background: currentColor;
 }
 
-.prio-badge--sm { font-size: 11px; padding: 2px 8px; }
-.prio-badge--md { font-size: 12px; padding: 3px 10px; }
+.prio-badge--sm { font-size: 12px; padding: 2px 8px; }
+.prio-badge--md { font-size: 14px; padding: 3px 10px; }
 .prio-badge--lg { font-size: 14px; padding: 4px 12px; }
 
 .prio-badge--danger {

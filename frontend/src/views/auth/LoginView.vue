@@ -109,7 +109,7 @@ const features = [
 
       <div class="login-hero-content">
         <div class="login-hero-center">
-          <div class="login-hero-eyebrow">PLATAFORMA SAAS · COLEGIOS PRIVADOS</div>
+          <div class="login-hero-eyebrow">PLATAFORMA SAAS · INSTITUCIONES EDUCATIVAS</div>
           <h2 class="login-hero-title">
             Gestiona el ciclo de vida<br />
             de tus activos tecnológicos<br />
@@ -130,7 +130,7 @@ const features = [
         </div>
 
         <p class="login-hero-footer">
-          © 2026 EduTrack AI · Diseñado para colegios del Perú
+          © 2026 EduTrack AI · Diseñado para instituciones educativas del Perú
         </p>
       </div>
     </aside>

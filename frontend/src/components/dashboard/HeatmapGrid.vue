@@ -31,23 +31,32 @@ function variant(score) {
   <div class="heatmap">
     <div v-for="g in grupos" :key="g.edificio" class="heatmap-edificio">
       <p class="heatmap-edificio-title">Edificio {{ g.edificio }}</p>
-      <div class="heatmap-grid">
+      <div class="heatmap-rows">
         <div
           v-for="aula in g.items"
           :key="aula.aula"
-          :class="['heatmap-cell', `heatmap-cell--${variant(aula.score_promedio)}`]"
-          :title="`${aula.aula} · score promedio ${aula.score_promedio}`"
+          class="heatmap-row"
+          :title="`${aula.aula} · Score promedio: ${aula.score_promedio}`"
         >
-          <span class="heatmap-cell-aula">{{ aula.aula }}</span>
-          <span class="heatmap-cell-score">{{ aula.score_promedio }}</span>
-          <span class="heatmap-cell-meta">{{ aula.activos }} {{ aula.activos === 1 ? 'activo' : 'activos' }}</span>
+          <span class="heatmap-row-aula">{{ aula.aula }}</span>
+          <div class="heatmap-row-track">
+            <div
+              :class="['heatmap-row-fill', `heatmap-row-fill--${variant(aula.score_promedio)}`]"
+              :style="{ width: `${aula.score_promedio}%` }"
+            />
+          </div>
+          <span :class="['heatmap-row-score', `heatmap-row-score--${variant(aula.score_promedio)}`]">
+            {{ aula.score_promedio }}
+          </span>
+          <span class="heatmap-row-meta">{{ aula.activos }} eq.</span>
         </div>
       </div>
     </div>
+
     <div class="heatmap-leyenda">
-      <span><span class="heatmap-leyenda-dot heatmap-leyenda-dot--success" /> Saludable (70+)</span>
-      <span><span class="heatmap-leyenda-dot heatmap-leyenda-dot--warning" /> Atención (40–69)</span>
-      <span><span class="heatmap-leyenda-dot heatmap-leyenda-dot--danger" /> Crítico (&lt; 40)</span>
+      <span><span class="heatmap-dot heatmap-dot--success" /> Saludable (≥70)</span>
+      <span><span class="heatmap-dot heatmap-dot--warning" /> Atención (40–69)</span>
+      <span><span class="heatmap-dot heatmap-dot--danger" /> Crítico (&lt;40)</span>
     </div>
   </div>
 </template>
@@ -56,8 +65,9 @@ function variant(score) {
 .heatmap {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
+
 .heatmap-edificio-title {
   font-size: 11px;
   font-weight: 700;
@@ -66,56 +76,71 @@ function variant(score) {
   color: var(--color-text-secondary);
   margin: 0 0 8px;
 }
-.heatmap-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 8px;
-}
-.heatmap-cell {
+
+.heatmap-rows {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 4px;
-  padding: 10px 12px;
-  border-radius: var(--radius-md);
-  aspect-ratio: 2 / 1;
-  min-height: 64px;
-  position: relative;
-  transition: transform var(--transition-fast);
-  cursor: default;
-  border: 1px solid transparent;
+  gap: 6px;
 }
-.heatmap-cell:hover {
-  transform: scale(1.03);
-}
-.heatmap-cell--success { background: rgba(30,132,73,0.16);  color: var(--color-success);  border-color: rgba(30,132,73,0.3); }
-.heatmap-cell--warning { background: rgba(211,84,0,0.16);   color: var(--color-warning);  border-color: rgba(211,84,0,0.3); }
-.heatmap-cell--danger  { background: rgba(192,57,43,0.18);  color: var(--color-danger);   border-color: rgba(192,57,43,0.3); }
 
-.heatmap-cell-aula {
-  font-size: 12px;
+.heatmap-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 36px 44px;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+  cursor: default;
+}
+.heatmap-row:hover { background: var(--color-bg); }
+
+.heatmap-row-aula {
+  font-size: 13px;
   font-weight: 600;
-  line-height: 1.2;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.heatmap-cell-score {
-  font-size: 20px;
+
+.heatmap-row-track {
+  height: 8px;
+  background: var(--color-border);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.heatmap-row-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.heatmap-row-fill--success { background: var(--color-success); }
+.heatmap-row-fill--warning { background: var(--color-warning); }
+.heatmap-row-fill--danger  { background: var(--color-danger); }
+
+.heatmap-row-score {
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: -0.4px;
   font-variant-numeric: tabular-nums;
-  line-height: 1;
+  text-align: right;
 }
-.heatmap-cell-meta {
-  font-size: 10.5px;
-  opacity: 0.75;
-  font-weight: 500;
+.heatmap-row-score--success { color: var(--color-success); }
+.heatmap-row-score--warning { color: var(--color-warning); }
+.heatmap-row-score--danger  { color: var(--color-danger); }
+
+.heatmap-row-meta {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  text-align: right;
+  white-space: nowrap;
 }
 
 .heatmap-leyenda {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
-  padding-top: 8px;
+  padding-top: 12px;
   border-top: 1px solid var(--color-border);
   font-size: 11px;
   color: var(--color-text-secondary);
@@ -125,12 +150,13 @@ function variant(score) {
   align-items: center;
   gap: 5px;
 }
-.heatmap-leyenda-dot {
-  width: 10px;
-  height: 10px;
+.heatmap-dot {
+  width: 8px;
+  height: 8px;
   border-radius: 9999px;
+  flex-shrink: 0;
 }
-.heatmap-leyenda-dot--success { background: var(--color-success); }
-.heatmap-leyenda-dot--warning { background: var(--color-warning); }
-.heatmap-leyenda-dot--danger  { background: var(--color-danger);  }
+.heatmap-dot--success { background: var(--color-success); }
+.heatmap-dot--warning { background: var(--color-warning); }
+.heatmap-dot--danger  { background: var(--color-danger); }
 </style>

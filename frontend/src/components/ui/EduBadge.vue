@@ -21,8 +21,8 @@ defineProps({
   white-space: nowrap;
 }
 /* Tamaños */
-.edu-badge--sm { padding: 2px 8px;  font-size: 11px; }
-.edu-badge--md { padding: 3px 10px; font-size: 12px; }
+.edu-badge--sm { padding: 2px 8px;  font-size: 12px; }
+.edu-badge--md { padding: 3px 10px; font-size: 13px; }
 .edu-badge--lg { padding: 4px 12px; font-size: 14px; }
 
 /* Variantes */

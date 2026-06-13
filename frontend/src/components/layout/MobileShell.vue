@@ -37,4 +37,15 @@ const drawerOpen = ref(false)
   padding-left: max(16px, env(safe-area-inset-left));
   padding-right: max(16px, env(safe-area-inset-right));
 }
+@media (min-width: 640px) {
+  .mobile-shell { background: var(--color-surface); }
+  .mobile-content {
+    max-width: 580px;
+    width: 100%;
+    margin: 0 auto;
+    background: var(--color-bg);
+    border-left: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+  }
+}
 </style>
