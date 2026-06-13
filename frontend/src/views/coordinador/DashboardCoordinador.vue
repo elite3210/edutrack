@@ -17,6 +17,7 @@ import {
   ClipboardDocumentListIcon,
   BellAlertIcon,
   ArrowRightIcon,
+  ChevronRightIcon,
   ClockIcon,
   MapPinIcon,
   PlusIcon,
@@ -28,13 +29,6 @@ const dashboard = useDashboardStore()
 const alertas   = useAlertasStore()
 const ordenes   = useOrdenesStore()
 
-const nombre = computed(() => auth.user?.nombre?.split(' ')[0] ?? 'Coordinador')
-const greeting = computed(() => {
-  const h = new Date().getHours()
-  if (h < 12) return 'Buenos días'
-  if (h < 19) return 'Buenas tardes'
-  return 'Buenas noches'
-})
 
 const alertasRecientes = computed(() =>
   alertas.list.filter(a => !a.atendida).slice(0, 5),
@@ -76,14 +70,11 @@ onMounted(async () => {
 
 <template>
   <AppShell>
-    <!-- Saludo -->
+    <!-- Header -->
     <header class="dashboard-header">
       <div>
-        <p class="dashboard-eyebrow">{{ greeting }},</p>
-        <h1 class="dashboard-title">{{ nombre }}</h1>
-        <p class="dashboard-subtitle">
-          Aquí está el resumen de los activos de tu institución.
-        </p>
+        <h1 class="dashboard-title">Panel de control</h1>
+        <p class="dashboard-subtitle">Resumen del estado de los activos tecnológicos de tu institución.</p>
       </div>
       <EduButton variant="primary" @click="router.push('/coordinador/activos/nuevo')">
         <PlusIcon class="dashboard-icon" />
@@ -162,14 +153,19 @@ onMounted(async () => {
           description="El motor EduTrack AI monitorea tus equipos y aparecerán aquí cuando requieran atención."
         />
         <ul v-else class="dashboard-list">
-          <li v-for="a in alertasRecientes" :key="a.id" class="dashboard-list-item">
-            <span
-              class="dashboard-list-badge"
-              :class="`dashboard-list-badge--${alertaVariant(a.dias_restantes)}`"
-            >
-              {{ alertaLabel(a) }}
-            </span>
+          <li
+            v-for="a in alertasRecientes"
+            :key="a.id"
+            class="dashboard-list-item dashboard-list-item--clickable"
+            @click="router.push('/coordinador/alertas')"
+          >
             <div class="dashboard-list-body">
+              <span
+                class="dashboard-list-badge"
+                :class="`dashboard-list-badge--${alertaVariant(a.dias_restantes)}`"
+              >
+                {{ alertaLabel(a) }}
+              </span>
               <p class="dashboard-list-title">{{ a.activo_nombre }}</p>
               <p class="dashboard-list-meta">
                 <MapPinIcon class="dashboard-list-icon" />
@@ -179,10 +175,11 @@ onMounted(async () => {
             <button
               type="button"
               class="dashboard-list-action"
-              @click="router.push(`/coordinador/ordenes/nueva?alerta=${a.id}`)"
+              @click.stop="router.push(`/coordinador/ordenes/nueva?alerta=${a.id}`)"
             >
-              Crear OT
+              Crear orden
             </button>
+            <ChevronRightIcon class="dashboard-list-chevron" />
           </li>
         </ul>
       </EduCard>
@@ -221,13 +218,13 @@ onMounted(async () => {
             class="dashboard-list-item dashboard-list-item--clickable"
             @click="router.push(`/coordinador/ordenes/${o.id}`)"
           >
-            <span
-              class="dashboard-list-badge"
-              :class="`dashboard-list-badge--${prioridadVariant(o.prioridad)}`"
-            >
-              {{ o.prioridad }}
-            </span>
             <div class="dashboard-list-body">
+              <span
+                class="dashboard-list-badge"
+                :class="`dashboard-list-badge--${prioridadVariant(o.prioridad)}`"
+              >
+                {{ o.prioridad }}
+              </span>
               <p class="dashboard-list-title">
                 <span class="dashboard-list-numero">{{ o.numero }}</span>
                 · {{ o.activo_nombre }}
@@ -237,6 +234,7 @@ onMounted(async () => {
                 {{ estadoEtiqueta(o.estado) }} · vence {{ o.fecha_limite }}
               </p>
             </div>
+            <ChevronRightIcon class="dashboard-list-chevron" />
           </li>
         </ul>
       </EduCard>
@@ -248,25 +246,20 @@ onMounted(async () => {
 .dashboard-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   gap: 16px;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
 }
-.dashboard-eyebrow {
-  font-size: 13px;
-  color: var(--color-text-secondary);
-  margin: 0 0 4px;
-}
 .dashboard-title {
-  font-size: 28px;
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.3px;
   color: var(--color-text-primary);
-  margin: 0 0 6px;
+  margin: 0 0 2px;
 }
 .dashboard-subtitle {
-  font-size: 14.5px;
+  font-size: 13px;
   color: var(--color-text-secondary);
   margin: 0;
 }
@@ -276,7 +269,7 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  margin-bottom: 28px;
+  margin-bottom: 16px;
 }
 @media (max-width: 900px) {
   .dashboard-metrics { grid-template-columns: repeat(2, 1fr); }
@@ -370,15 +363,16 @@ onMounted(async () => {
   background: var(--color-bg);
 }
 .dashboard-list-badge {
-  flex-shrink: 0;
+  display: inline-flex;
+  align-self: flex-start;
   font-size: 10.5px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   padding: 3px 10px;
   border-radius: 9999px;
-  text-align: center;
   white-space: nowrap;
+  margin-bottom: 2px;
 }
 .dashboard-list-badge--danger  { background: var(--color-danger-bg);  color: var(--color-danger);  }
 .dashboard-list-badge--warning { background: var(--color-warning-bg); color: var(--color-warning); }
@@ -386,6 +380,9 @@ onMounted(async () => {
 .dashboard-list-body {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 .dashboard-list-title {
   font-size: 13.5px;
@@ -412,6 +409,12 @@ onMounted(async () => {
 .dashboard-list-icon {
   width: 12px;
   height: 12px;
+  flex-shrink: 0;
+}
+.dashboard-list-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-disabled);
   flex-shrink: 0;
 }
 .dashboard-list-action {
