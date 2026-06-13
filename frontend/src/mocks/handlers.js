@@ -165,6 +165,20 @@ export const handlers = [
     const idx = ordenes.findIndex(o => o.id === params.id)
     if (idx === -1) return HttpResponse.json({ detail: 'No encontrado' }, { status: 404 })
     const data = await request.json()
+    const hoy = new Date().toISOString().split('T')[0]
+    const historial_estados = [
+      ...(ordenes[idx].historial_estados ?? []),
+      { estado: data.estado, fecha: hoy, usuario: data.usuario ?? 'Sistema' },
+    ]
+    ordenes[idx] = { ...ordenes[idx], ...data, historial_estados }
+    return HttpResponse.json(ordenes[idx])
+  }),
+
+  http.patch('/api/v1/ordenes/:id', async ({ params, request }) => {
+    await delay()
+    const idx = ordenes.findIndex(o => o.id === params.id)
+    if (idx === -1) return HttpResponse.json({ detail: 'No encontrado' }, { status: 404 })
+    const data = await request.json()
     ordenes[idx] = { ...ordenes[idx], ...data }
     return HttpResponse.json(ordenes[idx])
   }),

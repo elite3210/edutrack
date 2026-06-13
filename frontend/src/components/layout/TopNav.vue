@@ -40,6 +40,10 @@ function isActive(to) {
   return route.path.startsWith(to)
 }
 
+function irACampana() {
+  if (auth.user?.rol === 'coordinador') router.push('/coordinador/alertas')
+}
+
 const menuOpen = ref(false)
 
 function logout() {
@@ -71,7 +75,7 @@ function logout() {
     <!-- Acciones -->
     <div class="nav-actions">
       <!-- Campana -->
-      <button class="nav-icon-btn" title="Notificaciones">
+      <button class="nav-icon-btn" title="Alertas" @click="irACampana">
         <BellIcon class="icon-md" />
         <span v-if="alertas.totalPendientes > 0" class="nav-badge">
           {{ alertas.totalPendientes > 9 ? '9+' : alertas.totalPendientes }}

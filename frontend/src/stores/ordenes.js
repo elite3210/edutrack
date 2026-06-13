@@ -33,5 +33,13 @@ export const useOrdenesStore = defineStore('ordenes', () => {
     return actualizada
   }
 
-  return { list, current, loading, fetchAll, fetchOne, create, updateEstado }
+  async function update(id, data) {
+    const actualizada = await api.updateOrden(id, data)
+    const idx = list.value.findIndex(o => o.id === id)
+    if (idx !== -1) list.value[idx] = actualizada
+    if (current.value?.id === id) current.value = actualizada
+    return actualizada
+  }
+
+  return { list, current, loading, fetchAll, fetchOne, create, updateEstado, update }
 })

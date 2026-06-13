@@ -204,45 +204,46 @@
 ## Fase 3 — Coordinador: Órdenes, Alertas y Usuarios
 **5 vistas**
 
-- [ ] `src/views/coordinador/OrdenesListView.vue`
-  - [ ] EduTable: número OT, activo, tipo, técnico asignado, prioridad, estado, fecha límite, acciones
-  - [ ] Filtros: estado (chips seleccionables), prioridad, técnico asignado, búsqueda por texto
-  - [ ] PrioridadBadge y EstadoBadge en columnas correspondientes
-  - [ ] Filas vencidas (fecha límite pasada + no cerrada) con fondo rojo sutil
-  - [ ] Botón "+ Nueva OT" en PageHeader
+- [x] `src/views/coordinador/OrdenesListView.vue`
+  - [x] EduTable: número OT, activo, tipo, técnico asignado, prioridad, estado, fecha límite, acciones
+  - [x] Filtros: estado (chips seleccionables con contadores), prioridad, técnico asignado, búsqueda por texto
+  - [x] PrioridadBadge y EstadoBadge en columnas correspondientes
+  - [x] Filas vencidas (fecha límite pasada + no cerrada) con borde rojo izquierdo
+  - [x] Botón "+ Nueva OT" en PageHeader
+  - [x] Paginación 10 items/página · ordenamiento vencidas-primero por fecha límite
 
-- [ ] `src/views/coordinador/OrdenFormView.vue`
-  - [ ] Sección "Activo": selector de activo (buscar por nombre/ubicación) o pre-relleno si viene de alerta/reporte
-  - [ ] Sección "Orden": tipo (preventivo/correctivo/emergencia), descripción, prioridad (radio: alta/media/baja)
-  - [ ] Sección "Asignación": select de técnico con disponibilidad simulada, fecha límite
-  - [ ] Banner informativo si se crea desde alerta: "Generando OT para la alerta: [nombre alerta]"
-  - [ ] Validación completa
+- [x] `src/views/coordinador/OrdenFormView.vue`
+  - [x] Sección "Activo": buscador con autocompletado + score pill por resultado (o pre-relleno por query `activo` / `alerta`)
+  - [x] Sección "Orden": tipo (preventivo/correctivo/emergencia), descripción con contador, prioridad (radio cards alta/media/baja)
+  - [x] Sección "Asignación": select de técnico (filtrado por rol+activo), fecha límite
+  - [x] Banner informativo si se crea desde alerta con detalle del activo y mensaje
+  - [x] Validación reactiva + sidebar con resumen en vivo
 
-- [ ] `src/views/coordinador/OrdenDetailView.vue`
-  - [ ] Header: número OT, estado badge, prioridad badge
-  - [ ] Info del activo: card compacta con nombre, ubicación, score ring sm
-  - [ ] Timeline de estados: muestra el historial de cambios de estado con fecha y usuario
-  - [ ] Técnico asignado: avatar, nombre, botón "Reasignar"
-  - [ ] Evidencias fotográficas (grid de thumbnails si OT cerrada)
-  - [ ] Descripción del trabajo realizado (si cerrada)
-  - [ ] Botones de acción según estado actual: "Aceptar" / "Iniciar ejecución" / "Ver cierre"
-  - [ ] Componentes shared: `src/components/ordenes/`
-    - [ ] `EstadoBadge.vue`
-    - [ ] `PrioridadBadge.vue`
-    - [ ] `OrdenCard.vue`
+- [x] `src/views/coordinador/OrdenDetailView.vue`
+  - [x] Header: número OT, estado badge, prioridad badge, fecha límite
+  - [x] Info del activo: card con nombre, ubicación, score ring sm, link al detalle
+  - [x] Timeline de estados: historial con marcador coloreado por estado + fecha y usuario
+  - [x] Técnico asignado: avatar inicial, nombre, modal de reasignación
+  - [x] Evidencias fotográficas (grid de thumbnails) y descripción de cierre si OT cerrada
+  - [x] Botones de acción según estado: "Aceptar OT" → "Iniciar ejecución" → "Marcar como cerrada" (con modal de descripción)
+  - [x] Componentes shared: `src/components/ordenes/`
+    - [x] `EstadoBadge.vue` (basado en `getEstado()` de `utils/estadoOT.js`)
+    - [x] `PrioridadBadge.vue` (alta/media/baja con dot semántico)
+    - [x] `OrdenCard.vue` (cards mobile-friendly con días-restantes)
 
-- [ ] `src/views/coordinador/AlertasView.vue`
-  - [ ] Tres secciones colapsables: "Vencidos" (rojo), "Próximos 5 días" (naranja), "Próximos 15 días" (amarillo)
-  - [ ] AlertaCard por cada alerta: activo, tipo de tarea, días restantes, CTA "Crear OT"
-  - [ ] Contador de alertas por sección en el header de cada una
-  - [ ] EmptyState si no hay alertas
-  - [ ] Componente: `src/components/alertas/AlertaCard.vue`
+- [x] `src/views/coordinador/AlertasView.vue`
+  - [x] Tres secciones colapsables: "Vencidos / Riesgo" (rojo), "Próximos 5 días" (naranja), "Próximos 15 días" (amarillo)
+  - [x] AlertaCard por cada alerta: activo, tipo, días restantes, CTA "Crear OT" + "Ver activo"
+  - [x] Contador de alertas grande por sección en el header
+  - [x] EmptyState con check verde si no hay alertas
+  - [x] Componente: `src/components/alertas/AlertaCard.vue`
+  - [x] Campana del TopNav navega a esta vista para coordinador
 
-- [ ] `src/views/coordinador/UsuariosListView.vue` + `UsuarioFormView.vue`
-  - [ ] Lista: nombre, email, rol badge, fecha creación, acciones (editar, desactivar)
-  - [ ] Formulario crear/editar: nombre, email, rol (select: técnico/director), contraseña temporal (solo crear)
-  - [ ] Toggle activo/inactivo en la lista
-  - [ ] Sin acceso a usuarios de otras instituciones (filtrado por tenant en mock)
+- [x] `src/views/coordinador/UsuariosListView.vue` + `UsuarioFormView.vue`
+  - [x] Lista: avatar + nombre, email, rol badge, fecha creación, toggle activo, acciones (editar)
+  - [x] Formulario crear/editar: nombre, email, rol, contraseña + confirmación (solo crear) con generador
+  - [x] Toggle activo/inactivo inline en lista + sección "Estado de la cuenta" en form de edición
+  - [x] Sin acceso a usuarios de otras instituciones (mock filtrado por `institucion_id`)
 
 ---
 
@@ -371,7 +372,7 @@
 | 0 | Arquitectura base | — | ✅ Completada |
 | 1 | Auth + Docente | 2 | ✅ Completada |
 | 2 | Coordinador: Activos | 4 | ✅ Completada |
-| 3 | Coordinador: Órdenes + Alertas + Usuarios | 5 | ⬜ Pendiente |
+| 3 | Coordinador: Órdenes + Alertas + Usuarios | 5 | ✅ Completada |
 | 4 | Director | 2 | ⬜ Pendiente |
 | 5 | Técnico PWA | 3 | ⬜ Pendiente |
 | 6 | Super Admin | 4 | ⬜ Pendiente |
@@ -416,3 +417,4 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3
 | 2026-06-12 | 0 | Scaffold, tokens, PWA, router, stores, composables, API layer, MSW, layouts, 12 componentes base, playground `/dev/components` | `npm run dev` arranca en <1s; `npm run build` compila 676 módulos en 4.4s con PWA precache de 64 entries; `mockServiceWorker.js` generado vía `npx msw init`. ESLint diferido a fase de pulido. |
 | 2026-06-12 | 1 | LoginView rediseñada (split-screen hero + form), ReporteFallaView con flujo de 3 pasos mobile-first, logo `logo-texto.png` integrado en assets | LoginView usa validación con `computed` en vez de vee-validate (equivalente funcional, evita dependencia para 2 campos). ReporteFallaView soporta foto opcional con `capture="environment"` y cola offline vía IndexedDB. |
 | 2026-06-12 | 2 | DashboardCoordinador con métricas + paneles de alertas/OTs, ActivosListView con filtros + EduTable + paginación, ActivoFormView (crear/editar) con CatalogoSelector + QR preview, ActivoDetailView con ScoreRing + factores + tabs | Componentes nuevos: `ScoreBadge`, `EduScoreRing` (SVG animado), `QrCodeDisplay` (patrón determinístico + canvas PNG), `CatalogoSelector` (chained selects), `MetricCard`, `EduTable` (ui/). Endpoint mock nuevo: `GET /api/v1/activos/:id/plan` con factores del score + tareas por categoría. Actualización en tiempo real vía WebSocket diferida a Fase 7. |
+| 2026-06-13 | 3 | OrdenesListView con chips por estado + contadores + filtros (prioridad/técnico) + paginación, OrdenFormView con buscador de activo y radio-cards de prioridad, OrdenDetailView con timeline de estados + acciones por estado + modales de cierre/reasignación, AlertasView con tres secciones colapsables, UsuariosListView con toggle activo inline, UsuarioFormView con generador de password | Componentes nuevos: `EstadoBadge`, `PrioridadBadge`, `OrdenCard` (ordenes/), `AlertaCard` (alertas/). Mock data ampliada: OTs 5→8 con `historial_estados` + `evidencias`, handler `PATCH /api/v1/ordenes/:id/estado` ahora actualiza el historial; nuevo handler genérico `PATCH /api/v1/ordenes/:id` para reasignación. Store `ordenes` añade método `update()`. Campana del TopNav navega a alertas para el coordinador. Build: 5.09s, 111 entries en precache. |
