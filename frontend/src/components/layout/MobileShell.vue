@@ -42,10 +42,12 @@ const drawerOpen = ref(false)
   .mobile-content {
     max-width: 580px;
     width: 100%;
-    margin: 0 auto;
+    margin: 24px auto;
     background: var(--color-bg);
-    border-left: 1px solid var(--color-border);
-    border-right: 1px solid var(--color-border);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding-top: 20px;
+    padding-bottom: 24px;
   }
 }
 </style>

@@ -87,6 +87,12 @@ export const routes = [
     component: () => import('@/views/shared/PerfilView.vue'),
     meta: { requiresAuth: true, roles: ['coordinador', 'director', 'tecnico', 'super_admin'] },
   },
+  {
+    path: '/notificaciones',
+    name: 'notificaciones',
+    component: () => import('@/views/shared/NotificacionesView.vue'),
+    meta: { requiresAuth: true, roles: ['coordinador', 'director', 'tecnico', 'super_admin'] },
+  },
 
   // ── Dev: playground de componentes (sólo en desarrollo) ──────────────
   {

@@ -9,8 +9,18 @@ import { usuarios }         from './data/usuarios'
 import { instituciones }    from './data/instituciones'
 import { proyeccionPorAnio } from './data/proyeccion'
 import { tokens, makeToken, partial } from './data/tokens'
+import { notificaciones } from './data/notificaciones'
 
 const delay = (ms = 300) => new Promise(r => setTimeout(r, ms))
+
+function getUserFromToken(request) {
+  try {
+    const auth  = request.headers.get('Authorization') || ''
+    const token = auth.replace('Bearer ', '')
+    const [, body] = token.split('.')
+    return JSON.parse(atob(body))
+  } catch { return null }
+}
 
 export const handlers = [
 
@@ -358,6 +368,28 @@ export const handlers = [
     const idx = tokens.findIndex(t => t.id === params.id)
     if (idx === -1) return HttpResponse.json({ detail: 'No encontrado' }, { status: 404 })
     tokens.splice(idx, 1)
+    return HttpResponse.json({ ok: true })
+  }),
+
+  // ── Notificaciones ────────────────────────────────────────────────────
+  http.get('/api/v1/notificaciones', async ({ request }) => {
+    await delay()
+    const user = getUserFromToken(request)
+    if (!user) return HttpResponse.json([], { status: 401 })
+    return HttpResponse.json(notificaciones.filter(n => n.usuario_id === user.id))
+  }),
+
+  http.post('/api/v1/notificaciones/:id/leer', async ({ params }) => {
+    await delay(100)
+    const n = notificaciones.find(n => n.id === params.id)
+    if (n) n.leida = true
+    return HttpResponse.json({ ok: true })
+  }),
+
+  http.post('/api/v1/notificaciones/leer-todas', async ({ request }) => {
+    await delay(100)
+    const user = getUserFromToken(request)
+    if (user) notificaciones.filter(n => n.usuario_id === user.id).forEach(n => { n.leida = true })
     return HttpResponse.json({ ok: true })
   }),
 ]

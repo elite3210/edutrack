@@ -242,7 +242,7 @@ function irAEjecutar() {
 
         <EduButton
           v-else-if="orden.estado === 'cerrada'"
-          variant="outline-gray"
+          variant="primary"
           size="lg-mobile"
           @click="router.push('/tecnico/ordenes')"
         >

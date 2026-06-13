@@ -8,6 +8,7 @@ import {
   ComputerDesktopIcon,
   ClipboardDocumentListIcon,
   BellAlertIcon,
+  BellIcon,
   UsersIcon,
   ChartBarIcon,
   PresentationChartLineIcon,
@@ -16,11 +17,14 @@ import {
   ArrowRightOnRectangleIcon,
   UserIcon,
 } from '@heroicons/vue/24/outline'
+import { useNotificationsStore } from '@/stores/notifications'
+import logoIcon from '@/assets/img/logo.png'
 
 const props = defineProps({ modelValue: { type: Boolean, default: false } })
 const emit  = defineEmits(['update:modelValue'])
 
 const auth   = useAuthStore()
+const notifs = useNotificationsStore()
 const route  = useRoute()
 const router = useRouter()
 
@@ -71,7 +75,7 @@ watch(() => props.modelValue, (open) => {
         <aside class="drawer" role="dialog" aria-modal="true">
           <header class="drawer-header">
             <div class="drawer-brand">
-              <div class="drawer-logo">ET</div>
+              <img :src="logoIcon" alt="EduTrack AI" class="drawer-logo" />
               <div>
                 <p class="drawer-brand-name">EduTrack <span>AI</span></p>
                 <p class="drawer-brand-user">{{ auth.user?.nombre }}</p>
@@ -97,6 +101,15 @@ watch(() => props.modelValue, (open) => {
 
           <div class="drawer-divider" />
           <nav class="drawer-nav">
+            <button class="drawer-item" type="button" @click="goto('/notificaciones')">
+              <div class="drawer-item-icon-wrap">
+                <BellIcon class="icon-md" />
+                <span v-if="notifs.totalNoLeidas > 0" class="drawer-notif-badge">
+                  {{ notifs.totalNoLeidas > 9 ? '9+' : notifs.totalNoLeidas }}
+                </span>
+              </div>
+              Notificaciones
+            </button>
             <button class="drawer-item" type="button" @click="goto('/perfil')">
               <UserIcon class="icon-md" />
               Mi perfil
@@ -142,10 +155,8 @@ watch(() => props.modelValue, (open) => {
 .drawer-brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .drawer-logo {
   width: 40px; height: 40px; flex-shrink: 0;
-  background: var(--color-primary); color: #fff;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: 700; letter-spacing: 0.5px;
+  object-fit: contain;
+  display: block;
 }
 .drawer-brand-name { font-size: 16px; font-weight: 700; color: var(--color-text-primary); margin: 0; }
 .drawer-brand-name span { color: var(--color-primary); }
@@ -187,6 +198,28 @@ watch(() => props.modelValue, (open) => {
 
 .drawer-divider { height: 1px; background: var(--color-border); margin: 4px 16px; }
 .icon-md { width: 22px; height: 22px; }
+
+.drawer-item-icon-wrap {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+}
+.drawer-notif-badge {
+  position: absolute;
+  top: -5px;
+  right: -6px;
+  min-width: 16px;
+  height: 16px;
+  background: var(--color-danger);
+  color: #fff;
+  border-radius: 9999px;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
 
 .drawer-enter-active, .drawer-leave-active { transition: opacity 200ms; }
 .drawer-enter-active .drawer, .drawer-leave-active .drawer { transition: transform 200ms ease-out; }
