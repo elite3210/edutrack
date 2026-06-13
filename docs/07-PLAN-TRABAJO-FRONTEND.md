@@ -311,27 +311,30 @@
 ## Fase 6 — Super Admin
 **4 vistas**
 
-- [ ] `src/views/admin/InstitucionesListView.vue`
-  - [ ] Tabla: nombre, RUC, activos registrados, usuarios, estado activo/inactivo, acciones
-  - [ ] Toggle rápido activo/inactivo inline
-  - [ ] Botón "+ Nueva institución"
+- [x] `src/views/admin/InstitucionesListView.vue`
+  - [x] Tabla: nombre legal+corto con avatar, RUC monoespaciado, contacto (email+tel), activos, usuarios, toggle estado, editar
+  - [x] Toggle activo/inactivo inline con loading state
+  - [x] Búsqueda por nombre/RUC/email + filtro estado (todos / activas / inactivas)
+  - [x] Botón "+ Nueva institución" + contador en subtitle (total · activas · activos · usuarios)
 
-- [ ] `src/views/admin/InstitucionFormView.vue`
-  - [ ] Campos: nombre legal, nombre corto, RUC, email de contacto, teléfono, dirección
-  - [ ] Sección "Primer coordinador": nombre, email (se crea la cuenta al guardar la institución)
-  - [ ] Estado activo/inactivo toggle en edición
+- [x] `src/views/admin/InstitucionFormView.vue`
+  - [x] Campos: nombre legal, nombre corto, RUC (validación 11 dígitos), email, teléfono, dirección (textarea)
+  - [x] Sección "Primer coordinador" (solo crear): nombre + email con banner informativo de cuenta auto-generada
+  - [x] Sección "Estado de la cuenta" (solo editar) con toggle visual activa/inactiva
+  - [x] Sidebar con resumen en vivo y validación reactiva
 
-- [ ] `src/views/admin/CatalogoListView.vue`
-  - [ ] Tabla agrupada por marca: expandible, modelos por marca con categoría y vida útil
-  - [ ] Botón "+ Nuevo modelo" por marca o global
-  - [ ] Columna "Reglas de mantenimiento": número de reglas + ícono para expandir
-  - [ ] Botón "Cargar PDF de manual" por modelo (simulado en mock)
+- [x] `src/views/admin/CatalogoListView.vue`
+  - [x] Modelos agrupados por marca: cards colapsables con avatar circular + contador
+  - [x] Cada modelo muestra categoría, vida útil (años), número de reglas, estado del manual PDF (indexado / sin manual)
+  - [x] Búsqueda por marca/modelo/categoría + filtro categoría
+  - [x] Botón "+ Nuevo modelo" global · botón "Cargar PDF" inline por modelo (simulación con toast)
 
-- [ ] `src/views/admin/CatalogoModeloFormView.vue`
-  - [ ] Sección "Modelo": marca (input), nombre del modelo, categoría (select), vida útil en meses
-  - [ ] Sección "Especificaciones": campos dinámicos clave-valor (agregar/quitar)
-  - [ ] Sección "Reglas de mantenimiento": tabla editable (tipo de tarea + intervalo en días), agregar/quitar filas
-  - [ ] Sección "Manual PDF": input de archivo + estado de indexación simulado
+- [x] `src/views/admin/CatalogoModeloFormView.vue`
+  - [x] Sección "Modelo": marca, modelo, categoría (select), vida útil en meses
+  - [x] Sección "Especificaciones": filas clave-valor dinámicas (agregar/quitar)
+  - [x] Sección "Reglas de mantenimiento": tabla editable (tarea + intervalo en días), agregar/quitar filas
+  - [x] Sección "Manual PDF": dropzone con preview indexando + indicador animado + quitar
+  - [x] Sidebar con resumen (marca, categoría, vida útil, contadores de reglas/specs, estado manual)
 
 ---
 
@@ -377,7 +380,7 @@
 | 3 | Coordinador: Órdenes + Alertas + Usuarios | 5 | ✅ Completada |
 | 4 | Director | 2 | ✅ Completada |
 | 5 | Técnico PWA | 3 | ✅ Completada |
-| 6 | Super Admin | 4 | ⬜ Pendiente |
+| 6 | Super Admin | 4 | ✅ Completada |
 | 7 | Comunes + pulido | 2 + revisión | ⬜ Pendiente |
 | **Total** | | **23** | |
 
@@ -422,3 +425,4 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3
 | 2026-06-13 | 3 | OrdenesListView con chips por estado + contadores + filtros (prioridad/técnico) + paginación, OrdenFormView con buscador de activo y radio-cards de prioridad, OrdenDetailView con timeline de estados + acciones por estado + modales de cierre/reasignación, AlertasView con tres secciones colapsables, UsuariosListView con toggle activo inline, UsuarioFormView con generador de password | Componentes nuevos: `EstadoBadge`, `PrioridadBadge`, `OrdenCard` (ordenes/), `AlertaCard` (alertas/). Mock data ampliada: OTs 5→8 con `historial_estados` + `evidencias`, handler `PATCH /api/v1/ordenes/:id/estado` ahora actualiza el historial; nuevo handler genérico `PATCH /api/v1/ordenes/:id` para reasignación. Store `ordenes` añade método `update()`. Campana del TopNav navega a alertas para el coordinador. Build: 5.09s, 111 entries en precache. |
 | 2026-06-13 | 4 | DashboardDirector con SemaforoChart (donut Chart.js) + MetricCards + HeatmapGrid agrupado por edificio + Top 5 críticos + filtros + auto-refresh 30 s, ProyeccionView con cronograma mensual + cards de totales + sección de candidatos a reemplazo + exportar PDF (window.print + @media print) | Componentes nuevos: `SemaforoChart` (vue-chartjs Doughnut), `HeatmapGrid` (grid agrupado por edificio). Mock dashboard ampliado con `top_criticos` (5 items) y `categorias`; nueva mock `proyeccion.js` con `proyeccionPorAnio` (2026 + 2027) e items con costos + recurrencia. Handler `GET /api/v1/proyeccion` ahora calcula totales. Store `dashboard` expone `topCriticos` y `categorias`. Build: 5.36s, 120 entries en precache. PDF resuelto con `window.print()` para evitar dependencia html2pdf.js. |
 | 2026-06-13 | 5 | MisOrdenesView con tabs + contadores filtrando por `tecnico_id` del auth, OrdenDetailTecnico con acordeón de historial + botón sticky según estado + auto-aceptado al estar en lugar, EjecutarOrdenView con flujo de 3 pasos QR → fotos → cierre, modal de confirmación con resumen, soporte offline vía `useOffline.enqueue` (IndexedDB) | Componentes nuevos en `shared/`: `QrScanner` (cámara con `getUserMedia` + overlay animado + fallback manual + botón simular para mock), `FotoCapture` (input `capture="environment"` + preview + retomar/quitar), `EvidenciaUploader` (slots dinámicos min/max). Touch targets ≥ 48 px, safe areas respetadas. Auto-transición a `en_ejecucion` al iniciar la ejecución desde estado `aceptada`. Build: 5.21s, 132 entries en precache. |
+| 2026-06-13 | 6 | InstitucionesListView con tabla + toggle activo inline + filtros, InstitucionFormView con sección "Primer coordinador" (crear) y "Estado" (editar), CatalogoListView con cards expandibles agrupadas por marca + indicador de manual PDF, CatalogoModeloFormView con especificaciones clave-valor dinámicas, reglas en tabla editable y dropzone de manual con simulación de indexado | Mock instituciones ampliado 2 → 4 (incluye 1 inactiva). Mock catálogo ampliado: cada modelo ahora tiene `reglas` y `manual_pdf` (nombre + indexado + páginas), expuestos también vía `getCatalogo()`. Exportada `categorias` desde el mock. Validación de RUC peruano (11 dígitos). Build: 6.68s, 135 entries en precache (1115 KiB). |
