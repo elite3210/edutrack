@@ -9,6 +9,7 @@ import AppShell      from '@/components/layout/AppShell.vue'
 import EduCard       from '@/components/ui/EduCard.vue'
 import EduButton     from '@/components/ui/EduButton.vue'
 import EduModal      from '@/components/ui/EduModal.vue'
+import EduInput      from '@/components/ui/EduInput.vue'
 import EduSelect     from '@/components/ui/EduSelect.vue'
 import EduTextarea   from '@/components/ui/EduTextarea.vue'
 import SkeletonLoader from '@/components/ui/SkeletonLoader.vue'
@@ -55,29 +56,6 @@ async function load() {
 }
 onMounted(load)
 
-// ─── Acciones según estado ────────────────────────────────────
-const accionPrimaria = computed(() => {
-  if (!orden.value) return null
-  const e = orden.value.estado
-  if (e === 'pendiente') return { label: 'Aceptar orden',    siguiente: 'aceptada',     icon: CheckCircleIcon }
-  if (e === 'aceptada')  return { label: 'Iniciar ejecución', siguiente: 'en_ejecucion', icon: PlayCircleIcon }
-  if (e === 'en_ejecucion') return { label: 'Marcar como cerrada', siguiente: 'cerrada', icon: CheckCircleIcon }
-  return null
-})
-
-const cambiandoEstado = ref(false)
-async function cambiarEstado(siguiente) {
-  cambiandoEstado.value = true
-  try {
-    await ordenes.updateEstado(orden.value.id, siguiente, { usuario: 'Coordinador' })
-    success(`Orden actualizada a: ${siguiente.replace('_', ' ')}`)
-  } catch {
-    toastError('No se pudo cambiar el estado')
-  } finally {
-    cambiandoEstado.value = false
-  }
-}
-
 // ─── Reasignación ────────────────────────────────────────────
 const showReasignar = ref(false)
 const nuevoTecnico  = ref('')
@@ -111,38 +89,115 @@ async function confirmarReasignacion() {
   }
 }
 
-// ─── Cierre desde coordinador ────────────────────────────────
-const showCierre = ref(false)
-const descripcionCierre = ref('')
-const cerrando = ref(false)
-async function confirmarCierre() {
-  if (!descripcionCierre.value.trim()) {
-    toastError('Describe el trabajo realizado')
-    return
-  }
-  cerrando.value = true
+// ─── Modal: cambiar prioridad ────────────────────────────────
+const showPrioridad      = ref(false)
+const nuevaPrioridad     = ref('')
+const notaPrioridad      = ref('')
+const guardandoPrioridad = ref(false)
+
+function abrirCambiarPrioridad() {
+  nuevaPrioridad.value = orden.value.prioridad
+  notaPrioridad.value  = ''
+  showPrioridad.value  = true
+}
+async function confirmarPrioridad() {
+  if (nuevaPrioridad.value === orden.value.prioridad) { showPrioridad.value = false; return }
+  guardandoPrioridad.value = true
   try {
-    await ordenes.updateEstado(orden.value.id, 'cerrada', {
-      descripcion_cierre: descripcionCierre.value.trim(),
-      cerrada_en:         new Date().toISOString().split('T')[0],
-      usuario:            'Coordinador',
+    await ordenes.update(orden.value.id, {
+      prioridad:   nuevaPrioridad.value,
+      nota_cambio: notaPrioridad.value.trim() || null,
+      usuario:     'Coordinador',
     })
-    success('Orden cerrada correctamente')
-    showCierre.value = false
+    success('Prioridad actualizada')
+    showPrioridad.value = false
   } catch {
-    toastError('No se pudo cerrar la orden')
+    toastError('No se pudo actualizar la prioridad')
   } finally {
-    cerrando.value = false
+    guardandoPrioridad.value = false
   }
 }
 
-function onAccionPrimaria() {
-  const sig = accionPrimaria.value?.siguiente
-  if (sig === 'cerrada') {
-    descripcionCierre.value = ''
-    showCierre.value = true
-  } else if (sig) {
-    cambiarEstado(sig)
+// ─── Modal: cambiar estado ───────────────────────────────────
+const showEstado        = ref(false)
+const nuevoEstado       = ref('')
+const descripcionCierre = ref('')
+const notaEstado        = ref('')
+const guardandoEstado   = ref(false)
+
+const estadoOptions = [
+  { value: 'pendiente',    label: 'Pendiente' },
+  { value: 'aceptada',     label: 'Aceptada' },
+  { value: 'en_ejecucion', label: 'En ejecución' },
+  { value: 'cerrada',      label: 'Cerrada' },
+]
+
+function abrirCambiarEstado() {
+  nuevoEstado.value       = orden.value.estado
+  descripcionCierre.value = ''
+  notaEstado.value        = ''
+  showEstado.value        = true
+}
+async function confirmarEstado() {
+  if (nuevoEstado.value === orden.value.estado) { showEstado.value = false; return }
+  if (nuevoEstado.value === 'cerrada' && !descripcionCierre.value.trim()) {
+    toastError('Describe el trabajo realizado para cerrar la orden')
+    return
+  }
+  guardandoEstado.value = true
+  try {
+    if (nuevoEstado.value === 'cerrada') {
+      await ordenes.updateEstado(orden.value.id, 'cerrada', {
+        descripcion_cierre: descripcionCierre.value.trim(),
+        cerrada_en:         new Date().toISOString().split('T')[0],
+        usuario:            'Coordinador',
+        nota_cambio:        null,
+      })
+      success('Orden cerrada correctamente')
+    } else {
+      await ordenes.updateEstado(orden.value.id, nuevoEstado.value, {
+        usuario:     'Coordinador',
+        nota_cambio: notaEstado.value.trim() || null,
+      })
+      success('Estado actualizado')
+    }
+    showEstado.value = false
+  } catch {
+    toastError('No se pudo actualizar el estado')
+  } finally {
+    guardandoEstado.value = false
+  }
+}
+
+// ─── Modal: cambiar fecha límite ─────────────────────────────
+const showFechaLimite      = ref(false)
+const nuevaFechaLimite     = ref('')
+const razonFechaLimite     = ref('')
+const guardandoFechaLimite = ref(false)
+
+function abrirCambiarFecha() {
+  nuevaFechaLimite.value = orden.value.fecha_limite
+  razonFechaLimite.value = ''
+  showFechaLimite.value  = true
+}
+async function confirmarFecha() {
+  if (!razonFechaLimite.value.trim()) {
+    toastError('Indica el motivo del cambio de fecha')
+    return
+  }
+  guardandoFechaLimite.value = true
+  try {
+    await ordenes.update(orden.value.id, {
+      fecha_limite: nuevaFechaLimite.value,
+      nota_cambio:  razonFechaLimite.value.trim(),
+      usuario:      'Coordinador',
+    })
+    success('Fecha límite actualizada')
+    showFechaLimite.value = false
+  } catch {
+    toastError('No se pudo actualizar la fecha')
+  } finally {
+    guardandoFechaLimite.value = false
   }
 }
 </script>
@@ -181,25 +236,49 @@ function onAccionPrimaria() {
           </div>
           <h1 class="ot-title">{{ orden.activo_nombre }}</h1>
           <div class="ot-meta">
-            <PrioridadBadge :prioridad="orden.prioridad" size="md" />
-            <EstadoBadge :estado="orden.estado" size="md" />
-            <span class="ot-meta-item">
+            <button
+              v-if="orden.estado !== 'cerrada'"
+              type="button"
+              class="ot-badge-btn"
+              title="Cambiar prioridad"
+              @click="abrirCambiarPrioridad"
+            >
+              <PrioridadBadge :prioridad="orden.prioridad" size="md" />
+              <PencilSquareIcon class="ot-badge-pencil" />
+            </button>
+            <PrioridadBadge v-else :prioridad="orden.prioridad" size="md" />
+
+            <button
+              v-if="orden.estado !== 'cerrada'"
+              type="button"
+              class="ot-badge-btn"
+              title="Cambiar estado"
+              @click="abrirCambiarEstado"
+            >
+              <EstadoBadge :estado="orden.estado" size="md" />
+              <PencilSquareIcon class="ot-badge-pencil" />
+            </button>
+            <EstadoBadge v-else :estado="orden.estado" size="md" />
+
+            <button
+              v-if="orden.estado !== 'cerrada'"
+              type="button"
+              class="ot-badge-btn ot-meta-item"
+              title="Cambiar fecha límite"
+              @click="abrirCambiarFecha"
+            >
+              <CalendarDaysIcon class="ot-icon-sm" />
+              Fecha límite: <strong>{{ orden.fecha_limite }}</strong>
+              <PencilSquareIcon class="ot-badge-pencil" />
+            </button>
+            <span v-else class="ot-meta-item">
               <CalendarDaysIcon class="ot-icon-sm" />
               Fecha límite: <strong>{{ orden.fecha_limite }}</strong>
             </span>
           </div>
         </div>
         <div class="ot-header-actions">
-          <EduButton
-            v-if="accionPrimaria"
-            variant="primary"
-            :loading="cambiandoEstado"
-            @click="onAccionPrimaria"
-          >
-            <component :is="accionPrimaria.icon" class="ot-icon" />
-            {{ accionPrimaria.label }}
-          </EduButton>
-          <span v-else class="ot-cerrada-marker">
+          <span v-if="orden.estado === 'cerrada'" class="ot-cerrada-marker">
             <CheckCircleIcon class="ot-icon" />
             Orden cerrada el {{ orden.cerrada_en }}
           </span>
@@ -285,17 +364,31 @@ function onAccionPrimaria() {
                 :key="i"
                 class="ot-timeline-item"
               >
-                <div :class="['ot-timeline-marker', `ot-timeline-marker--${item.estado}`]">
+                <!-- Marker -->
+                <div :class="['ot-timeline-marker', item.tipo === 'prioridad' || item.tipo === 'fecha_limite' ? 'ot-timeline-marker--meta' : `ot-timeline-marker--${item.estado}`]">
                   <CheckCircleIcon v-if="item.estado === 'cerrada'" />
-                  <PlayCircleIcon v-else-if="item.estado === 'en_ejecucion'" />
+                  <PlayCircleIcon  v-else-if="item.estado === 'en_ejecucion'" />
+                  <CalendarDaysIcon v-else-if="item.tipo === 'fecha_limite'" />
+                  <PencilSquareIcon v-else-if="item.tipo === 'prioridad'" />
                   <WrenchScrewdriverIcon v-else />
                 </div>
+                <!-- Content -->
                 <div class="ot-timeline-content">
                   <div class="ot-timeline-head">
-                    <EstadoBadge :estado="item.estado" size="sm" />
+                    <!-- Estado -->
+                    <EstadoBadge v-if="!item.tipo || item.tipo === 'estado'" :estado="item.estado" size="sm" />
+                    <!-- Prioridad -->
+                    <span v-else-if="item.tipo === 'prioridad'" class="ot-timeline-label ot-timeline-label--prioridad">
+                      Prioridad: <em>{{ item.valor_anterior }}</em> → <strong>{{ item.valor_nuevo }}</strong>
+                    </span>
+                    <!-- Fecha límite -->
+                    <span v-else-if="item.tipo === 'fecha_limite'" class="ot-timeline-label ot-timeline-label--fecha">
+                      Fecha límite: <em>{{ item.valor_anterior }}</em> → <strong>{{ item.valor_nuevo }}</strong>
+                    </span>
                     <span class="ot-timeline-fecha">{{ item.fecha }}</span>
                   </div>
                   <p class="ot-timeline-user">por <strong>{{ item.usuario }}</strong></p>
+                  <p v-if="item.nota" class="ot-timeline-nota">{{ item.nota }}</p>
                 </div>
               </li>
             </ol>
@@ -367,24 +460,104 @@ function onAccionPrimaria() {
       </template>
     </EduModal>
 
-    <!-- Modal: cierre manual desde coordinador -->
-    <EduModal v-model="showCierre" title="Cerrar orden de trabajo" size="md">
-      <p class="ot-modal-help">
-        Esta acción marcará la orden como cerrada y la incluirá en el historial del activo.
-      </p>
+    <!-- Modal: cambiar prioridad -->
+    <EduModal v-model="showPrioridad" title="Cambiar prioridad">
+      <p class="ot-modal-help">Selecciona la nueva prioridad para esta orden.</p>
+      <div class="ot-prioridad-options">
+        <button
+          v-for="p in ['alta', 'media', 'baja']"
+          :key="p"
+          type="button"
+          class="ot-prioridad-option"
+          :class="[`ot-prioridad-option--${p}`, { 'is-active': nuevaPrioridad === p }]"
+          @click="nuevaPrioridad = p"
+        >
+          {{ p.charAt(0).toUpperCase() + p.slice(1) }}
+        </button>
+      </div>
       <EduTextarea
+        v-model="notaPrioridad"
+        label="Motivo del cambio (opcional)"
+        placeholder="¿Por qué se cambia la prioridad?"
+        :rows="2"
+        :maxlength="200"
+        style="margin-top: 16px"
+      />
+      <template #footer>
+        <EduButton variant="outline-gray" @click="showPrioridad = false">Cancelar</EduButton>
+        <EduButton variant="primary" :loading="guardandoPrioridad" @click="confirmarPrioridad">
+          Guardar cambios
+        </EduButton>
+      </template>
+    </EduModal>
+
+    <!-- Modal: cambiar estado -->
+    <EduModal v-model="showEstado" title="Cambiar estado de la orden" size="md">
+      <p class="ot-modal-help">Selecciona el nuevo estado. Si cierras la orden, deberás describir el trabajo realizado.</p>
+      <div class="ot-estado-options">
+        <button
+          v-for="e in estadoOptions"
+          :key="e.value"
+          type="button"
+          class="ot-estado-option"
+          :class="{ 'is-active': nuevoEstado === e.value, 'is-current': orden.estado === e.value }"
+          @click="nuevoEstado = e.value"
+        >
+          <EstadoBadge :estado="e.value" size="sm" />
+          <span v-if="orden.estado === e.value" class="ot-estado-current-tag">actual</span>
+        </button>
+      </div>
+      <EduTextarea
+        v-if="nuevoEstado === 'cerrada'"
         v-model="descripcionCierre"
         label="Descripción del trabajo realizado"
         placeholder="Detalla qué se hizo en la intervención…"
-        :rows="5"
+        :rows="4"
         :maxlength="500"
         required
+        style="margin-top: 16px"
+      />
+      <EduTextarea
+        v-else-if="nuevoEstado && nuevoEstado !== orden.estado"
+        v-model="notaEstado"
+        label="Nota (opcional)"
+        placeholder="¿Por qué se cambia el estado?"
+        :rows="2"
+        :maxlength="200"
+        style="margin-top: 16px"
       />
       <template #footer>
-        <EduButton variant="outline-gray" @click="showCierre = false">Cancelar</EduButton>
-        <EduButton variant="primary" :loading="cerrando" @click="confirmarCierre">
+        <EduButton variant="outline-gray" @click="showEstado = false">Cancelar</EduButton>
+        <EduButton variant="primary" :loading="guardandoEstado" @click="confirmarEstado">
           <CheckCircleIcon class="ot-icon" />
-          Cerrar orden
+          Guardar cambios
+        </EduButton>
+      </template>
+    </EduModal>
+
+    <!-- Modal: cambiar fecha límite -->
+    <EduModal v-model="showFechaLimite" title="Cambiar fecha límite" size="md">
+      <p class="ot-modal-help">El cambio de fecha quedará registrado en el historial. El motivo es obligatorio.</p>
+      <EduInput
+        v-model="nuevaFechaLimite"
+        type="date"
+        label="Nueva fecha límite"
+        required
+      />
+      <EduTextarea
+        v-model="razonFechaLimite"
+        label="Motivo de la ampliación"
+        placeholder="Ej: Técnico solicitó ampliación por falta de repuesto…"
+        :rows="3"
+        :maxlength="300"
+        required
+        style="margin-top: 16px"
+      />
+      <template #footer>
+        <EduButton variant="outline-gray" @click="showFechaLimite = false">Cancelar</EduButton>
+        <EduButton variant="primary" :loading="guardandoFechaLimite" @click="confirmarFecha">
+          <CalendarDaysIcon class="ot-icon" />
+          Guardar cambios
         </EduButton>
       </template>
     </EduModal>
@@ -447,6 +620,82 @@ function onAccionPrimaria() {
   align-items: center;
   gap: 14px;
   flex-wrap: wrap;
+}
+
+/* Badge clickeable (prioridad / estado) */
+.ot-badge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: opacity var(--transition-fast);
+}
+.ot-badge-btn:hover { opacity: 0.8; }
+.ot-badge-pencil {
+  width: 13px;
+  height: 13px;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+/* Modal prioridad — pills */
+.ot-prioridad-options {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+.ot-prioridad-option {
+  flex: 1;
+  min-width: 80px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+.ot-prioridad-option:hover { transform: translateY(-1px); }
+.ot-prioridad-option.is-active { border-color: currentColor; }
+.ot-prioridad-option--alta  { background: var(--color-danger-bg);  color: var(--color-danger);  }
+.ot-prioridad-option--media { background: var(--color-warning-bg); color: var(--color-warning); }
+.ot-prioridad-option--baja  { background: var(--color-info-bg);    color: var(--color-info);    }
+
+/* Modal estado — opciones */
+.ot-estado-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+.ot-estado-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-bg);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+.ot-estado-option:hover { background: var(--color-border); }
+.ot-estado-option.is-active { border-color: var(--color-primary); background: var(--color-primary-light); }
+.ot-estado-current-tag {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--color-text-secondary);
 }
 .ot-meta-item {
   display: inline-flex;
@@ -633,6 +882,7 @@ function onAccionPrimaria() {
 .ot-timeline-marker--aceptada     { background: var(--color-info-bg);        color: var(--color-info); }
 .ot-timeline-marker--en_ejecucion { background: var(--color-in-progress-bg); color: var(--color-in-progress); }
 .ot-timeline-marker--cerrada      { background: var(--color-success-bg);     color: var(--color-success); }
+.ot-timeline-marker--meta         { background: var(--color-bg); color: var(--color-text-secondary); border-color: var(--color-border); }
 
 .ot-timeline-content { flex: 1; padding-top: 4px; }
 .ot-timeline-head {
@@ -656,6 +906,22 @@ function onAccionPrimaria() {
   color: var(--color-text-primary);
   font-weight: 600;
 }
+.ot-timeline-nota {
+  font-size: 12.5px;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+  border-left: 3px solid var(--color-border);
+  padding: 6px 10px;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+.ot-timeline-label {
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+.ot-timeline-label em  { font-style: normal; color: var(--color-text-secondary); }
+.ot-timeline-label strong { font-weight: 700; }
 
 /* Sidebar */
 .ot-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 84px; }

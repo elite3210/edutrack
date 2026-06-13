@@ -13,8 +13,10 @@ export const ordenes = [
     institucion_id: 'inst-001',
     historial_estados: [
       { estado: 'pendiente',    fecha: '2026-06-10', usuario: 'Ana Torres' },
+      { tipo: 'prioridad',      fecha: '2026-06-10', usuario: 'Ana Torres',   valor_anterior: 'media', valor_nuevo: 'alta', nota: 'El docente reportó que el equipo lleva 3 días sin funcionar y hay clases afectadas.' },
       { estado: 'aceptada',     fecha: '2026-06-11', usuario: 'Luis Quispe' },
-      { estado: 'en_ejecucion', fecha: '2026-06-13', usuario: 'Luis Quispe' },
+      { tipo: 'fecha_limite',   fecha: '2026-06-12', usuario: 'Ana Torres',   valor_anterior: '2026-06-13', valor_nuevo: '2026-06-15', nota: 'Técnico solicitó ampliación: requiere repuesto de válvula que llega el 14.' },
+      { estado: 'en_ejecucion', fecha: '2026-06-13', usuario: 'Luis Quispe', nota: 'Diagnóstico confirmado: fuga en la válvula de expansión.' },
     ],
   },
   {

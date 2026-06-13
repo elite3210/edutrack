@@ -170,7 +170,7 @@ export const handlers = [
     const hoy = new Date().toISOString().split('T')[0]
     const historial_estados = [
       ...(ordenes[idx].historial_estados ?? []),
-      { estado: data.estado, fecha: hoy, usuario: data.usuario ?? 'Sistema' },
+      { estado: data.estado, fecha: hoy, usuario: data.usuario ?? 'Sistema', nota: data.nota_cambio ?? null },
     ]
     ordenes[idx] = { ...ordenes[idx], ...data, historial_estados }
     return HttpResponse.json(ordenes[idx])
@@ -181,7 +181,17 @@ export const handlers = [
     const idx = ordenes.findIndex(o => o.id === params.id)
     if (idx === -1) return HttpResponse.json({ detail: 'No encontrado' }, { status: 404 })
     const data = await request.json()
-    ordenes[idx] = { ...ordenes[idx], ...data }
+    const hoy  = new Date().toISOString().split('T')[0]
+    const { nota_cambio, usuario, ...campos } = data
+    const nuevas_entradas = []
+    if (campos.prioridad && campos.prioridad !== ordenes[idx].prioridad) {
+      nuevas_entradas.push({ tipo: 'prioridad', fecha: hoy, usuario: usuario ?? 'Coordinador', valor_anterior: ordenes[idx].prioridad, valor_nuevo: campos.prioridad, nota: nota_cambio ?? null })
+    }
+    if (campos.fecha_limite && campos.fecha_limite !== ordenes[idx].fecha_limite) {
+      nuevas_entradas.push({ tipo: 'fecha_limite', fecha: hoy, usuario: usuario ?? 'Coordinador', valor_anterior: ordenes[idx].fecha_limite, valor_nuevo: campos.fecha_limite, nota: nota_cambio ?? null })
+    }
+    const historial_estados = [...(ordenes[idx].historial_estados ?? []), ...nuevas_entradas]
+    ordenes[idx] = { ...ordenes[idx], ...campos, historial_estados }
     return HttpResponse.json(ordenes[idx])
   }),
 
