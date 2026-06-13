@@ -18,6 +18,8 @@
 
 ## Fase 1 — Diseño e iniciación (semanas 1–2)
 
+- [x] ⚙ Sistema de diseño UI: documento `docs/06-DISEÑO-UI.md` con tokens de color, tipografía dual desktop/mobile, espaciado, componentes, formularios, layouts por rol y especificaciones PWA
+- [x] ⚙ Plan de trabajo frontend: documento `docs/07-PLAN-TRABAJO-FRONTEND.md` con checklist ejecutable de 8 fases, 23 vistas y criterios de cierre por fase
 - [ ] ⚙ Modelos SQLAlchemy de TODAS las entidades (§4 de arquitectura) con `TenantMixin` y `TimestampMixin` + migración inicial Alembic
 - [ ] ⚙ Seed de desarrollo: 1 institución demo, usuarios por rol, catálogo inicial (≥ 15 modelos de Epson/HP/Dell/LG/Daikin con reglas de mantenimiento reales)
 - [ ] ⚙ Autenticación: `core/security.py`, `POST /auth/login`, `POST /auth/refresh`, deps `get_current_user`, `require_role`, `get_tenant_id`
@@ -73,4 +75,4 @@
 
 | Fecha | Sesión | Tareas completadas | Notas |
 | --- | --- | --- | --- |
-| _(Claude Code agrega una fila al cerrar cada sesión)_ | | | |
+| 2026-06-12 | Sesión 1 | Sistema de diseño UI (`docs/06-DISEÑO-UI.md`) + Plan de trabajo frontend (`docs/07-PLAN-TRABAJO-FRONTEND.md`) | 23 vistas en 8 fases con checklist ejecutable |
