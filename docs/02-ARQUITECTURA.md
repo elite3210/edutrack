@@ -96,16 +96,39 @@ frontend/
 ├── src/
 │   ├── main.js                  # Vue 3 + router + Pinia + registro del SW
 │   ├── router/                  # guardas por rol
-│   ├── stores/                  # Pinia: auth, activos, ordenes, notificaciones
+│   ├── stores/                  # Pinia: auth, activos, ordenes, alertas, dashboard, usuarios
+│   │   └── notifications.js     # lista event-based + fetchAll / marcarLeida / marcarTodasLeidas
 │   ├── composables/
 │   │   ├── useApi.js            # fetch con JWT + refresh automático
 │   │   ├── useWebSocket.js      # conexión /ws con reconexión
-│   │   └── useOffline.js        # cola IndexedDB + sincronización
-│   ├── views/                   # por rol: coordinador/, director/, tecnico/, docente/, admin/
+│   │   ├── useOffline.js        # cola IndexedDB + sincronización
+│   │   └── useNotifMeta.js      # mapeo tipo→{icon, color} para 17 tipos de evento
+│   ├── api/
+│   │   └── notificaciones.api.js  # getNotificaciones / marcarLeida / marcarTodasLeidas
+│   ├── mocks/
+│   │   └── data/notificaciones.js # 19 notificaciones dummy distribuidas por rol (17 tipos)
+│   ├── views/
+│   │   ├── coordinador/ · director/ · tecnico/ · docente/ · admin/
+│   │   └── shared/
+│   │       ├── NotificacionesView.vue  # inbox /notificaciones (todos los roles)
+│   │       ├── PerfilView.vue
+│   │       └── NotFoundView.vue
 │   └── components/
+│       └── layout/
+│           ├── TopNav.vue       # dropdown de notificaciones unificado (desktop)
+│           ├── MobileHeader.vue # dropdown de notificaciones unificado (móvil)
+│           └── NavDrawer.vue    # badge de no leídas en ítem Notificaciones
 ├── public/                      # manifest.json, service worker
 └── vite.config.js
 ```
+
+### Endpoints de notificaciones (prototipo con MSW; backend a implementar en integración)
+
+| Método | Ruta | Descripción |
+| --- | --- | --- |
+| `GET` | `/api/v1/notificaciones` | Lista las notificaciones del usuario autenticado (filtrado por `usuario_id` del JWT) |
+| `POST` | `/api/v1/notificaciones/{id}/leer` | Marca una notificación como leída |
+| `POST` | `/api/v1/notificaciones/leer-todas` | Marca todas las notificaciones del usuario como leídas |
 
 ## 4. Modelo de datos
 
@@ -124,6 +147,7 @@ Tablas con su propósito (el DDL exacto lo definen los modelos SQLAlchemy + migr
 | `evidencia` | Fotos de la intervención | `orden_id`, `archivo_path` |
 | `score_salud` | Histórico del score | `activo_id`, `score int`, `factores jsonb`, `calculado_en` |
 | `alerta` | Alertas del scheduler | `activo_id`, `tipo`, `mensaje`, `atendida` |
+| `notificacion` | Inbox de eventos del sistema | `usuario_id`, `tipo enum`, `titulo`, `mensaje`, `link`, `actor`, `leida bool`, `fecha` |
 | `mcp_audit_log` | Auditoría de herramientas MCP | `usuario_id`, `herramienta`, `parametros jsonb`, `invocada_en` |
 | `documento_rag` | Chunks de manuales indexados | `modelo_id`, `contenido`, `embedding vector` |
 

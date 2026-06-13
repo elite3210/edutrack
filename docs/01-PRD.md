@@ -116,6 +116,18 @@ Criterios de aceptación:
 - Métricas globales de uso sin acceso a datos operativos de clientes.
 - Log de auditoría de cambios al catálogo (fecha, hora, usuario).
 
+### HU-12 — Centro de notificaciones in-app (RF04 extendido)
+COMO usuario autenticado (cualquier rol) QUIERO ver mis notificaciones en un panel siempre accesible y en una página de bandeja de entrada PARA no perder eventos relevantes aunque no esté conectado en el momento en que ocurren.
+
+Criterios de aceptación:
+- La campana en la barra de navegación (desktop y móvil) muestra el conteo de no leídas (badge rojo, máximo "9+").
+- Al hacer clic se despliega un panel con las 5 notificaciones más recientes (no leídas primero, luego leídas), con icono semántico por tipo de evento, título, mensaje abreviado y tiempo relativo.
+- La opción "Marcar todas como leídas" está disponible si hay no leídas; "Ver todas las notificaciones" navega a `/notificaciones`.
+- La página `/notificaciones` muestra la bandeja completa con tabs "Todas / No leídas", secciones separadas NUEVAS / ANTERIORES y soporte para marcar leída al hacer clic en cada ítem (navega al enlace del evento).
+- Los tipos de evento incluyen: `orden_asignada`, `orden_cerrada`, `prioridad_cambiada`, `fecha_limite`, `comentario`, `foto_subida`, `orden_actualizada`, `alerta_generada`, `alerta_critica`, `reporte_falla`, `reporte_disponible`, `proyeccion_actualizada`, `resumen_semanal`, `nueva_institucion`, `limite_activos`, `catalogo_actualizado`, `onboarding_completo`.
+- Cada notificación almacena: `tipo`, `titulo`, `mensaje`, `fecha`, `leida`, `link` (ruta de destino), `actor` (quién generó el evento).
+- El backend persiste las notificaciones en tabla `notificacion` y las emite también vía WebSocket (`evento_notificacion`) para actualización en tiempo real.
+
 ### HU-11 — Servidor MCP del asistente IA (RF13)
 COMO coordinador o director QUIERO preguntar en lenguaje natural sobre mis activos a un asistente de IA PARA obtener respuestas con datos reales sin navegar los módulos.
 

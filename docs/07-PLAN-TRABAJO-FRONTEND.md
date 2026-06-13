@@ -61,7 +61,7 @@
 - [x] `src/stores/ordenes.js` — `list`, `current`, `fetchAll()`, `create()`, `updateEstado()`
 - [x] `src/stores/alertas.js` — `list`, `fetchAll()`, `marcarAtendida()`
 - [x] `src/stores/dashboard.js` — `metricas`, `semaforo`, `heatmap`, `fetchDashboard()`
-- [x] `src/stores/notificaciones.js` — `queue`, `agregar()`, `limpiar()`
+- [x] `src/stores/notifications.js` — `list`, `loading`, `totalNoLeidas`, `fetchAll()`, `marcarLeida(id)`, `marcarTodasLeidas()` *(event-based inbox, no queue)*
 - [x] `src/stores/usuarios.js` — `list`, `fetchAll()`, `create()`, `update()`
 
 ### 0.6 Composables base
@@ -69,6 +69,7 @@
 - [x] `src/composables/useApi.js` — `apiFetch(url, options)` con JWT desde authStore, refresh automático, manejo de errores globales
 - [x] `src/composables/useWebSocket.js` — conexión a `/ws/notificaciones`, reconexión exponencial, despacha eventos al store de notificaciones
 - [x] `src/composables/useOffline.js` — detecta `navigator.onLine`, cola de operaciones en IndexedDB (idb), sync al reconectar
+- [x] `src/composables/useNotifMeta.js` — mapea `tipo` de notificación a `{ icon: VueComponent, color: 'primary'|'success'|'warning'|'danger'|'info' }` para 17 tipos de evento
 
 ### 0.7 API service layer
 
@@ -82,6 +83,7 @@
 - [x] `src/api/proyeccion.api.js` — `getProyeccion(anio)`
 - [x] `src/api/usuarios.api.js` — `getUsuarios()`, `createUsuario(data)`, `updateUsuario(id, data)`
 - [x] `src/api/admin.api.js` — `getInstituciones()`, `createInstitucion(data)`, `getCatalogo()`, `createModelo(data)`
+- [x] `src/api/notificaciones.api.js` — `getNotificaciones()`, `marcarLeida(id)`, `marcarTodasLeidas()`
 
 ### 0.8 MSW — Mock Service Worker
 
@@ -94,7 +96,8 @@
 - [x] `src/mocks/data/alertas.js` — alertas a 3, 11, 14 días y vencidas
 - [x] `src/mocks/data/usuarios.js` — técnicos y directores de la institución demo
 - [x] `src/mocks/data/dashboard.js` — métricas del semáforo y heatmap
-- [x] `src/mocks/handlers.js` — handlers MSW que interceptan todas las rutas de `src/api/`
+- [x] `src/mocks/data/notificaciones.js` — 19 notificaciones distribuidas por rol y `usuario_id` (17 tipos de evento: orden_asignada, alerta_critica, reporte_falla, etc.)
+- [x] `src/mocks/handlers.js` — handlers MSW que interceptan todas las rutas de `src/api/`, incluidos `GET /notificaciones`, `POST /notificaciones/:id/leer`, `POST /notificaciones/leer-todas` con decodificación JWT para filtrar por usuario
 - [x] Inicializar MSW en `src/main.js` condicionado a `VITE_USE_MOCK=true`
 
 ### 0.9 Layouts
@@ -341,6 +344,17 @@
 ## Fase 7 — Comunes y pulido final
 **2 vistas + revisión global**
 
+- [x] `src/views/shared/NotificacionesView.vue` *(ruta `/notificaciones`, todos los roles)*
+  - [x] Inbox-style: tabs segmentados "Todas / No leídas" (pill container con sombra en activo)
+  - [x] Secciones "NUEVAS" y "ANTERIORES" con separador decorativo `::after`
+  - [x] Items con `border-left: 3px solid var(--color-primary)` como indicador de no leída (no fondo completo)
+  - [x] Icono 28×28 `border-radius: 7px` con color-mix semántico por tipo; desaturado para leídas
+  - [x] Animación stagger por ítem con `--i` CSS custom property y `animation-delay: calc(var(--i, 0) * 35ms)`
+  - [x] Page-header propio dentro de `.nv-wrap` (max-width 660px) para alinear título/badge/botón con la lista
+  - [x] Botón "Marcar todas como leídas" visible solo si hay no leídas; oculto en mobile (usa barra compacta)
+  - [x] Layout dual: `AppShell` en desktop (title vacío para no duplicar), `MobileShell` en mobile (title "Notificaciones")
+  - [x] EmptyState contextual por tab (ninguna / sin no leídas)
+
 - [x] `src/views/shared/PerfilView.vue`
   - [x] Datos personales con avatar inicial, nombre, email y rol como badge
   - [x] Cambiar contraseña: actual + nueva (mínimo 8) + confirmar, con toggle mostrar/ocultar
@@ -386,8 +400,8 @@
 | 4 | Director | 2 | ✅ Completada |
 | 5 | Técnico PWA | 3 | ✅ Completada |
 | 6 | Super Admin | 4 | ✅ Completada |
-| 7 | Comunes + pulido | 2 + revisión | ✅ Completada |
-| **Total** | | **23** | |
+| 7 | Comunes + pulido | 3 + revisión | ✅ Completada |
+| **Total** | | **24** | |
 
 ---
 
@@ -432,3 +446,4 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3
 | 2026-06-13 | 5 | MisOrdenesView con tabs + contadores filtrando por `tecnico_id` del auth, OrdenDetailTecnico con acordeón de historial + botón sticky según estado + auto-aceptado al estar en lugar, EjecutarOrdenView con flujo de 3 pasos QR → fotos → cierre, modal de confirmación con resumen, soporte offline vía `useOffline.enqueue` (IndexedDB) | Componentes nuevos en `shared/`: `QrScanner` (cámara con `getUserMedia` + overlay animado + fallback manual + botón simular para mock), `FotoCapture` (input `capture="environment"` + preview + retomar/quitar), `EvidenciaUploader` (slots dinámicos min/max). Touch targets ≥ 48 px, safe areas respetadas. Auto-transición a `en_ejecucion` al iniciar la ejecución desde estado `aceptada`. Build: 5.21s, 132 entries en precache. |
 | 2026-06-13 | 6 | InstitucionesListView con tabla + toggle activo inline + filtros, InstitucionFormView con sección "Primer coordinador" (crear) y "Estado" (editar), CatalogoListView con cards expandibles agrupadas por marca + indicador de manual PDF, CatalogoModeloFormView con especificaciones clave-valor dinámicas, reglas en tabla editable y dropzone de manual con simulación de indexado | Mock instituciones ampliado 2 → 4 (incluye 1 inactiva). Mock catálogo ampliado: cada modelo ahora tiene `reglas` y `manual_pdf` (nombre + indexado + páginas), expuestos también vía `getCatalogo()`. Exportada `categorias` desde el mock. Validación de RUC peruano (11 dígitos). Build: 6.68s, 135 entries en precache (1115 KiB). |
 | 2026-06-13 | 7 | PerfilView con avatar + cambio de contraseña (toggle visibilidad) + sección de tokens API para coordinador/director (generar con modal nombrado, mostrar token completo una sola vez con copy-to-clipboard, revocar). NotFoundView rediseñada con ilustración de lupa y navegación a home según rol. Revisión global: AppShell responsive, TopNav compacto en mobile, EduToast con safe-areas, `min-height: 100dvh` en shells | Mocks: `tokens.js` con generador `edu_pat_*` y partial helper. Handlers nuevos: `POST /api/v1/perfil/password`, `GET/POST/DELETE /api/v1/perfil/tokens`. API service `perfil.api.js`. AppShell con padding adaptativo + safe-area insets; PageHeader colapsa en móvil; TopNav oculta texto del logo y nombre del usuario en < 768px. Build: 5.45s, 140 entries en precache (1135 KiB). **🎉 Las 23 vistas del PMV están completas.** |
+| 2026-06-13 | 7 (ampliación) | Sistema de notificaciones unificado + NotificacionesView (vista 24): `useNotificationsStore` refactorizado a inbox event-based, `useNotifMeta.js`, `notificaciones.api.js`, 19 notificaciones dummy (17 tipos) con handlers MSW que decodifican JWT para filtrar por `usuario_id`. TopNav y MobileHeader rediseñados: dropdown profesional con `border-left` como indicador de no leída, separador "Anteriores", sin badge en header. NavDrawer con badge de no leídas en ítem Notificaciones. NotificacionesView: inbox con tabs segmentados, secciones NUEVAS/ANTERIORES, animación stagger, page-header propio al ancho de la lista (660px). Fixes: `NavigationDuplicated`, título doble, alineación header/lista. | Prototipo para informe académico — data dummy, sin integración backend. Total: **24 vistas**. |
