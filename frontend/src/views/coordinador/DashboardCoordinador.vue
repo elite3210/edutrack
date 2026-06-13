@@ -139,7 +139,7 @@ onMounted(async () => {
               </div>
             </div>
             <router-link to="/coordinador/alertas" class="dashboard-panel-cta">
-              Ver todas <ArrowRightIcon class="dashboard-icon" />
+              Ver todas
             </router-link>
           </div>
         </template>
@@ -198,7 +198,7 @@ onMounted(async () => {
               </div>
             </div>
             <router-link to="/coordinador/ordenes" class="dashboard-panel-cta">
-              Ver todas <ArrowRightIcon class="dashboard-icon" />
+              Ver todas
             </router-link>
           </div>
         </template>

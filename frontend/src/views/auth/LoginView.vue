@@ -219,7 +219,7 @@ const features = [
             @click="showDemos = !showDemos"
           >
             <span class="login-demos-dot" />
-            <span>Acceso demo — sin registrarte</span>
+            <span>Acceso demo - sin registrarte</span>
             <span class="login-demos-chevron" :class="{ 'login-demos-chevron--open': showDemos }">▾</span>
           </button>
 

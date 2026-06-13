@@ -107,7 +107,7 @@ onMounted(async () => {
       <InformationCircleIcon class="alertas-intro-icon" />
       <p class="alertas-intro-text">
         El motor EduTrack AI analiza el ciclo de vida de cada equipo y genera estas alertas automáticamente.
-        Atiende primero las secciones <strong>Crítico</strong> y <strong>Urgente</strong> — representan mantenimientos vencidos
+        Atiende primero las secciones <strong>Crítico</strong> y <strong>Urgente</strong> representan mantenimientos vencidos
         o equipos en riesgo de falla que afectan la operación del colegio.
       </p>
     </div>
