@@ -280,4 +280,14 @@ function logout() {
 /* Dropdown transition */
 .dropdown-enter-active, .dropdown-leave-active { transition: opacity 150ms, transform 150ms; }
 .dropdown-enter-from, .dropdown-leave-to { opacity: 0; transform: translateY(-4px); }
+
+@media (max-width: 768px) {
+  .top-nav { padding: 0 16px; gap: 12px; }
+  .nav-items { gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  .nav-items::-webkit-scrollbar { display: none; }
+  .nav-item { padding: 6px 12px; font-size: 13px; }
+  .nav-logo-text { display: none; }
+  .nav-user-name { display: none; }
+  .nav-user-btn { padding: 6px; }
+}
 </style>

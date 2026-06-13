@@ -34,12 +34,18 @@ defineProps({
 <style scoped>
 .app-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--color-bg);
 }
 .app-content {
   max-width: 1280px;
   margin: 0 auto;
   padding: 32px;
+  padding-left:  max(32px, env(safe-area-inset-left));
+  padding-right: max(32px, env(safe-area-inset-right));
+}
+@media (max-width: 768px) {
+  .app-content { padding: 20px 16px; }
 }
 .page-header {
   display: flex;
@@ -65,5 +71,10 @@ defineProps({
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+}
+@media (max-width: 640px) {
+  .page-header { flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 20px; }
+  .page-title { font-size: 22px; }
+  .page-subtitle { font-size: 14px; }
 }
 </style>

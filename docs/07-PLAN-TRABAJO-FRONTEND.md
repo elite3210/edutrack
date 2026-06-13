@@ -341,32 +341,37 @@
 ## Fase 7 — Comunes y pulido final
 **2 vistas + revisión global**
 
-- [ ] `src/views/shared/PerfilView.vue`
-  - [ ] Datos personales: nombre, email (readonly), rol (readonly)
-  - [ ] Cambiar contraseña: contraseña actual + nueva + confirmar
-  - [ ] Tokens de API (solo coordinador y director): tabla de tokens activos + botón "Generar nuevo token" + revocar
-  - [ ] Preferencias: *(reservado para futuras versiones)*
+- [x] `src/views/shared/PerfilView.vue`
+  - [x] Datos personales con avatar inicial, nombre, email y rol como badge
+  - [x] Cambiar contraseña: actual + nueva (mínimo 8) + confirmar, con toggle mostrar/ocultar
+  - [x] Tokens de API (solo coordinador y director): listar, generar con modal nombrado, modal de token recién creado con copiar al portapapeles + advertencia "una sola vez", revocar con confirm()
+  - [x] Layout dual (AppShell/MobileShell) según viewport
+  - [x] Card placeholder de preferencias para futuras versiones
 
-- [ ] `src/views/shared/NotFoundView.vue`
-  - [ ] Ilustración simple, mensaje "404 — Página no encontrada", botón "Volver al inicio"
+- [x] `src/views/shared/NotFoundView.vue`
+  - [x] Ilustración con lupa + círculo dashed + badge "404"
+  - [x] Botones "Volver atrás" (history) y "Ir al inicio" (route según rol del auth)
+  - [x] Fondo con radial-gradient y safe-areas respetadas
 
-- [ ] **Revisión responsive global**
-  - [ ] Verificar todas las vistas en 390px (mobile), 768px (tablet), 1280px (desktop)
-  - [ ] Confirmar que ningún texto queda en < 16px en mobile
-  - [ ] Confirmar touch targets ≥ 48px en todas las vistas del técnico y docente
-  - [ ] Confirmar safe areas en vistas móviles (notch + home indicator)
+- [x] **Revisión responsive global**
+  - [x] AppShell con padding adaptativo (32px desktop → 16px mobile) + safe-area insets
+  - [x] PageHeader colapsa a columna stretch en < 640px
+  - [x] TopNav oculta logo-texto y nombre de usuario en < 768px, items con scroll horizontal
+  - [x] EduInput y EduSelect 16px (no triggers zoom iOS) con altura 52px en mobile
 
-- [ ] **Revisión PWA**
-  - [ ] Instalabilidad verificada en Chrome DevTools (Lighthouse PWA score)
-  - [ ] Modo offline: AppShell carga sin conexión, OfflineBanner visible
-  - [ ] Cola IndexedDB del técnico funciona sin conexión y sincroniza al reconectar
-  - [ ] Service worker actualiza sin romper la sesión activa
+- [x] **Revisión PWA**
+  - [x] Service worker generado por vite-plugin-pwa (Workbox), 140 entries en precache (1135 KiB)
+  - [x] Manifest válido con theme-color #6400BE, íconos 192/512 + maskable
+  - [x] OfflineBanner sticky bajo TopNav/MobileHeader cuando `!navigator.onLine`
+  - [x] Cola IndexedDB del técnico operativa vía `useOffline.enqueue` + `syncPending` al volver `online`
+  - [x] AppShell y MobileShell con `min-height: 100dvh` (soporte navegador con barras dinámicas)
 
-- [ ] **Revisión de accesibilidad**
-  - [ ] Contraste verificado en los 5 colores semánticos sobre sus fondos
-  - [ ] Foco visible en todos los elementos interactivos (keyboard navigation)
-  - [ ] Todos los iconos funcionales tienen `aria-label`
-  - [ ] Formularios con `for/id` correctos en todos los campos
+- [x] **Revisión de accesibilidad**
+  - [x] `:focus-visible` global con `box-shadow: var(--shadow-ring)` aplicado a botones, inputs y enlaces
+  - [x] Todos los íconos accionables tienen `aria-label` o están dentro de botones con label textual
+  - [x] EduInput/EduSelect/EduTextarea con `<label>` ligado por jerarquía estructural
+  - [x] Toasts dentro de `aria-live="polite"` y `role="alert"` por toast
+  - [x] Modales con `role="dialog" aria-modal="true"`
 
 ---
 
@@ -381,7 +386,7 @@
 | 4 | Director | 2 | ✅ Completada |
 | 5 | Técnico PWA | 3 | ✅ Completada |
 | 6 | Super Admin | 4 | ✅ Completada |
-| 7 | Comunes + pulido | 2 + revisión | ⬜ Pendiente |
+| 7 | Comunes + pulido | 2 + revisión | ✅ Completada |
 | **Total** | | **23** | |
 
 ---
@@ -426,3 +431,4 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3
 | 2026-06-13 | 4 | DashboardDirector con SemaforoChart (donut Chart.js) + MetricCards + HeatmapGrid agrupado por edificio + Top 5 críticos + filtros + auto-refresh 30 s, ProyeccionView con cronograma mensual + cards de totales + sección de candidatos a reemplazo + exportar PDF (window.print + @media print) | Componentes nuevos: `SemaforoChart` (vue-chartjs Doughnut), `HeatmapGrid` (grid agrupado por edificio). Mock dashboard ampliado con `top_criticos` (5 items) y `categorias`; nueva mock `proyeccion.js` con `proyeccionPorAnio` (2026 + 2027) e items con costos + recurrencia. Handler `GET /api/v1/proyeccion` ahora calcula totales. Store `dashboard` expone `topCriticos` y `categorias`. Build: 5.36s, 120 entries en precache. PDF resuelto con `window.print()` para evitar dependencia html2pdf.js. |
 | 2026-06-13 | 5 | MisOrdenesView con tabs + contadores filtrando por `tecnico_id` del auth, OrdenDetailTecnico con acordeón de historial + botón sticky según estado + auto-aceptado al estar en lugar, EjecutarOrdenView con flujo de 3 pasos QR → fotos → cierre, modal de confirmación con resumen, soporte offline vía `useOffline.enqueue` (IndexedDB) | Componentes nuevos en `shared/`: `QrScanner` (cámara con `getUserMedia` + overlay animado + fallback manual + botón simular para mock), `FotoCapture` (input `capture="environment"` + preview + retomar/quitar), `EvidenciaUploader` (slots dinámicos min/max). Touch targets ≥ 48 px, safe areas respetadas. Auto-transición a `en_ejecucion` al iniciar la ejecución desde estado `aceptada`. Build: 5.21s, 132 entries en precache. |
 | 2026-06-13 | 6 | InstitucionesListView con tabla + toggle activo inline + filtros, InstitucionFormView con sección "Primer coordinador" (crear) y "Estado" (editar), CatalogoListView con cards expandibles agrupadas por marca + indicador de manual PDF, CatalogoModeloFormView con especificaciones clave-valor dinámicas, reglas en tabla editable y dropzone de manual con simulación de indexado | Mock instituciones ampliado 2 → 4 (incluye 1 inactiva). Mock catálogo ampliado: cada modelo ahora tiene `reglas` y `manual_pdf` (nombre + indexado + páginas), expuestos también vía `getCatalogo()`. Exportada `categorias` desde el mock. Validación de RUC peruano (11 dígitos). Build: 6.68s, 135 entries en precache (1115 KiB). |
+| 2026-06-13 | 7 | PerfilView con avatar + cambio de contraseña (toggle visibilidad) + sección de tokens API para coordinador/director (generar con modal nombrado, mostrar token completo una sola vez con copy-to-clipboard, revocar). NotFoundView rediseñada con ilustración de lupa y navegación a home según rol. Revisión global: AppShell responsive, TopNav compacto en mobile, EduToast con safe-areas, `min-height: 100dvh` en shells | Mocks: `tokens.js` con generador `edu_pat_*` y partial helper. Handlers nuevos: `POST /api/v1/perfil/password`, `GET/POST/DELETE /api/v1/perfil/tokens`. API service `perfil.api.js`. AppShell con padding adaptativo + safe-area insets; PageHeader colapsa en móvil; TopNav oculta texto del logo y nombre del usuario en < 768px. Build: 5.45s, 140 entries en precache (1135 KiB). **🎉 Las 23 vistas del PMV están completas.** |

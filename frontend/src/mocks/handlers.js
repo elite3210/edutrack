@@ -8,6 +8,7 @@ import { dashboardData }    from './data/dashboard'
 import { usuarios }         from './data/usuarios'
 import { instituciones }    from './data/instituciones'
 import { proyeccionPorAnio } from './data/proyeccion'
+import { tokens, makeToken, partial } from './data/tokens'
 
 const delay = (ms = 300) => new Promise(r => setTimeout(r, ms))
 
@@ -304,5 +305,49 @@ export const handlers = [
     await delay(200)
     const { refresh_token } = await request.json()
     return HttpResponse.json({ access_token: refresh_token, refresh_token })
+  }),
+
+  // ── Perfil: cambiar contraseña ────────────────────────────────────────
+  http.post('/api/v1/perfil/password', async ({ request }) => {
+    await delay(400)
+    const { password_actual, password_nueva } = await request.json()
+    if (password_actual !== '123456') {
+      return HttpResponse.json({ detail: 'La contraseña actual es incorrecta' }, { status: 400 })
+    }
+    if (!password_nueva || password_nueva.length < 8) {
+      return HttpResponse.json({ detail: 'La nueva contraseña debe tener al menos 8 caracteres' }, { status: 400 })
+    }
+    return HttpResponse.json({ ok: true })
+  }),
+
+  // ── Tokens de API ─────────────────────────────────────────────────────
+  http.get('/api/v1/perfil/tokens', async () => {
+    await delay()
+    return HttpResponse.json(tokens)
+  }),
+
+  http.post('/api/v1/perfil/tokens', async ({ request }) => {
+    await delay(500)
+    const { nombre } = await request.json()
+    const raw = makeToken()
+    const nuevo = {
+      id:           `tok-${Date.now()}`,
+      user_id:      'u-001',
+      nombre:       nombre?.trim() || 'Token sin nombre',
+      token_partial: partial(raw),
+      created_at:   new Date().toISOString().split('T')[0],
+      last_used_at: null,
+    }
+    tokens.unshift(nuevo)
+    // El token completo solo se devuelve en la respuesta de creación
+    return HttpResponse.json({ ...nuevo, token: raw }, { status: 201 })
+  }),
+
+  http.delete('/api/v1/perfil/tokens/:id', async ({ params }) => {
+    await delay(300)
+    const idx = tokens.findIndex(t => t.id === params.id)
+    if (idx === -1) return HttpResponse.json({ detail: 'No encontrado' }, { status: 404 })
+    tokens.splice(idx, 1)
+    return HttpResponse.json({ ok: true })
   }),
 ]

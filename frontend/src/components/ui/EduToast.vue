@@ -103,7 +103,11 @@ const iconMap = {
 .toast-leave-to   { opacity: 0; transform: translateX(20px); }
 
 @media (max-width: 640px) {
-  .toast-container { top: 12px; right: 12px; left: 12px; }
+  .toast-container {
+    top:   max(12px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+    left:  max(12px, env(safe-area-inset-left));
+  }
   .toast { min-width: 0; max-width: none; }
 }
 </style>
