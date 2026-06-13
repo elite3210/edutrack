@@ -13,7 +13,8 @@
       "Bash(npm run *)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Administrador\\\\Desktop\\\\TG\\\\Courses\\\\edutrack\" -Force)",
       "Bash(Select-Object -Property FullName, PSIsContainer)",
-      "Bash(Sort-Object FullName)"
+      "Bash(Sort-Object FullName)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }
