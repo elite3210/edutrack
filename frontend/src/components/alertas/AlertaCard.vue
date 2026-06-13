@@ -66,7 +66,7 @@ const tiempoLabel = computed(() => {
         @click.stop="$emit('crear-ot', alerta)"
       >
         <PlusIcon class="alerta-card-icon-sm" />
-        Crear OT
+        Crear orden
       </EduButton>
       <EduButton
         v-if="!alerta.atendida"

@@ -68,7 +68,7 @@ function validarCodigo(codigo) {
   }
   if (props.codigoEsperado && codigoLimpio !== props.codigoEsperado.toUpperCase()) {
     estado.value = 'error'
-    errorMsg.value = `El código no coincide con el activo de esta OT. Se esperaba: ${props.codigoEsperado}`
+    errorMsg.value = `El código no coincide con el activo de esta orden. Se esperaba: ${props.codigoEsperado}`
     emit('scan-error', { mensaje: errorMsg.value, codigo: codigoLimpio })
     return
   }

@@ -59,7 +59,7 @@ onMounted(load)
 const accionPrimaria = computed(() => {
   if (!orden.value) return null
   const e = orden.value.estado
-  if (e === 'pendiente') return { label: 'Aceptar OT',       siguiente: 'aceptada',     icon: CheckCircleIcon }
+  if (e === 'pendiente') return { label: 'Aceptar orden',    siguiente: 'aceptada',     icon: CheckCircleIcon }
   if (e === 'aceptada')  return { label: 'Iniciar ejecución', siguiente: 'en_ejecucion', icon: PlayCircleIcon }
   if (e === 'en_ejecucion') return { label: 'Marcar como cerrada', siguiente: 'cerrada', icon: CheckCircleIcon }
   return null
@@ -70,7 +70,7 @@ async function cambiarEstado(siguiente) {
   cambiandoEstado.value = true
   try {
     await ordenes.updateEstado(orden.value.id, siguiente, { usuario: 'Coordinador' })
-    success(`OT actualizada a: ${siguiente.replace('_', ' ')}`)
+    success(`Orden actualizada a: ${siguiente.replace('_', ' ')}`)
   } catch {
     toastError('No se pudo cambiar el estado')
   } finally {
@@ -127,10 +127,10 @@ async function confirmarCierre() {
       cerrada_en:         new Date().toISOString().split('T')[0],
       usuario:            'Coordinador',
     })
-    success('OT cerrada correctamente')
+    success('Orden cerrada correctamente')
     showCierre.value = false
   } catch {
-    toastError('No se pudo cerrar la OT')
+    toastError('No se pudo cerrar la orden')
   } finally {
     cerrando.value = false
   }
@@ -161,7 +161,7 @@ function onAccionPrimaria() {
 
     <EmptyState
       v-else-if="!orden"
-      title="OT no encontrada"
+      title="Orden no encontrada"
       description="No pudimos cargar esta orden de trabajo."
     >
       <template #action>
@@ -201,7 +201,7 @@ function onAccionPrimaria() {
           </EduButton>
           <span v-else class="ot-cerrada-marker">
             <CheckCircleIcon class="ot-icon" />
-            OT cerrada el {{ orden.cerrada_en }}
+            Orden cerrada el {{ orden.cerrada_en }}
           </span>
         </div>
       </header>
@@ -253,7 +253,7 @@ function onAccionPrimaria() {
             <template #header>
               <h2 class="ot-section-title">
                 <CheckCircleIcon class="ot-icon" />
-                Cierre de la OT
+                Cierre de la orden
               </h2>
             </template>
             <p class="ot-descripcion">{{ orden.descripcion_cierre ?? 'Sin descripción de cierre.' }}</p>
@@ -328,7 +328,7 @@ function onAccionPrimaria() {
           </EduCard>
 
           <EduCard padding="sm">
-            <p class="ot-sidebar-title">Datos de la OT</p>
+            <p class="ot-sidebar-title">Datos de la orden</p>
             <ul class="ot-sidebar-list">
               <li>
                 <span>Tipo</span>
@@ -370,7 +370,7 @@ function onAccionPrimaria() {
     <!-- Modal: cierre manual desde coordinador -->
     <EduModal v-model="showCierre" title="Cerrar orden de trabajo" size="md">
       <p class="ot-modal-help">
-        Esta acción marcará la OT como cerrada y la incluirá en el historial del activo.
+        Esta acción marcará la orden como cerrada y la incluirá en el historial del activo.
       </p>
       <EduTextarea
         v-model="descripcionCierre"
@@ -384,7 +384,7 @@ function onAccionPrimaria() {
         <EduButton variant="outline-gray" @click="showCierre = false">Cancelar</EduButton>
         <EduButton variant="primary" :loading="cerrando" @click="confirmarCierre">
           <CheckCircleIcon class="ot-icon" />
-          Cerrar OT
+          Cerrar orden
         </EduButton>
       </template>
     </EduModal>

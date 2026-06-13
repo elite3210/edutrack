@@ -118,7 +118,7 @@ watch([search, estadoFiltro, prioridadFiltro, tecnicoFiltro], () => { page.value
 
 // ─── Tabla ────────────────────────────────────────────────────
 const columns = [
-  { key: 'numero',       label: 'OT',            width: '11%' },
+  { key: 'numero',       label: 'N.° Orden',     width: '11%' },
   { key: 'activo',       label: 'Equipo',        width: '24%' },
   { key: 'tipo',         label: 'Tipo',          width: '11%' },
   { key: 'tecnico',      label: 'Técnico',       width: '15%' },
@@ -148,7 +148,7 @@ onMounted(async () => {
       </div>
       <EduButton variant="primary" @click="router.push('/coordinador/ordenes/nueva')">
         <PlusIcon class="ordenes-icon" />
-        Nueva OT
+        Nueva orden
       </EduButton>
     </header>
 
@@ -176,7 +176,7 @@ onMounted(async () => {
           v-model="search"
           type="text"
           class="ordenes-search-input"
-          placeholder="Buscar equipo, técnico, OT…"
+          placeholder="Buscar equipo, técnico, orden…"
         />
         <button
           v-if="search"
@@ -209,7 +209,7 @@ onMounted(async () => {
       v-else-if="filteredList.length === 0"
       title="Sin órdenes para mostrar"
       :description="hayFiltrosActivos
-        ? 'Ninguna OT coincide con los filtros aplicados.'
+        ? 'Ninguna orden coincide con los filtros aplicados.'
         : 'Aún no hay órdenes de trabajo registradas.'"
     >
       <template #action>
@@ -219,7 +219,7 @@ onMounted(async () => {
           @click="router.push('/coordinador/ordenes/nueva')"
         >
           <PlusIcon class="ordenes-icon" />
-          Crear primera OT
+          Crear primera orden
         </EduButton>
         <EduButton v-else variant="outline-gray" @click="limpiarFiltros">
           Limpiar filtros

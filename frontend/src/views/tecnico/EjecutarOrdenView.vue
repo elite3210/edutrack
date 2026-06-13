@@ -107,7 +107,7 @@ async function confirmarCierre() {
   try {
     if (isOnline.value) {
       await ordenes.updateEstado(orden.value.id, 'cerrada', payload)
-      success('OT cerrada correctamente')
+      success('Orden cerrada correctamente')
       router.push(`/tecnico/ordenes/${orden.value.id}`)
     } else {
       // Encolar para sincronizar cuando vuelva la conexión
@@ -132,7 +132,7 @@ async function confirmarCierre() {
       success('Cierre guardado offline. Se sincronizará al reconectar.')
       router.push('/tecnico/ordenes')
     } catch {
-      toastError('No se pudo cerrar la OT')
+      toastError('No se pudo cerrar la orden')
     }
   } finally {
     cerrando.value = false
@@ -153,10 +153,10 @@ const pasos = [
 </script>
 
 <template>
-  <MobileShell title="Ejecutar OT">
+  <MobileShell title="Ejecutar orden">
     <button class="ej-back" type="button" @click="router.push(`/tecnico/ordenes/${route.params.id}`)">
       <ArrowLeftIcon class="ej-icon" />
-      Volver a la OT
+      Volver a la orden
     </button>
 
     <div v-if="loading" class="ej-loading">

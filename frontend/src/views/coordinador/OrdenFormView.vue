@@ -98,7 +98,7 @@ const alertaOrigen = computed(() => {
 function validate() {
   const e = {}
   if (!form.value.activo_id)    e.activo_id    = 'Selecciona un activo'
-  if (!form.value.tipo)         e.tipo         = 'Selecciona el tipo de OT'
+  if (!form.value.tipo)         e.tipo         = 'Selecciona el tipo de orden'
   if (!form.value.descripcion?.trim()) e.descripcion = 'Describe el trabajo a realizar'
   else if (form.value.descripcion.trim().length < 10) e.descripcion = 'Describe con al menos 10 caracteres'
   if (!form.value.fecha_limite) e.fecha_limite = 'Indica la fecha límite'
@@ -132,10 +132,10 @@ async function onSubmit() {
       fecha_limite:     form.value.fecha_limite,
     }
     const nueva = await ordenes.create(payload)
-    success(`OT ${nueva.numero} creada`)
+    success(`Orden ${nueva.numero} creada`)
     router.push(`/coordinador/ordenes/${nueva.id}`)
   } catch (err) {
-    toastError('No se pudo crear la OT')
+    toastError('No se pudo crear la orden')
   } finally {
     submitting.value = false
   }
@@ -183,7 +183,7 @@ onMounted(async () => {
     <div v-if="alertaOrigen" class="form-alerta-banner">
       <InformationCircleIcon class="form-icon" />
       <div>
-        <p class="form-alerta-title">Creando OT desde alerta</p>
+        <p class="form-alerta-title">Creando orden desde alerta</p>
         <p class="form-alerta-msg">
           <strong>{{ alertaOrigen.activo_nombre }}</strong> · {{ alertaOrigen.mensaje }}
         </p>
@@ -371,7 +371,7 @@ onMounted(async () => {
         <div class="form-actions">
           <EduButton variant="primary" type="submit" :loading="submitting" @click="onSubmit">
             <CheckCircleIcon class="form-icon" />
-            Crear OT
+            Crear orden
           </EduButton>
           <EduButton variant="outline-gray" @click="router.push('/coordinador/ordenes')">
             Cancelar

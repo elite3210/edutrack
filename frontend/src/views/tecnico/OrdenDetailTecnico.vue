@@ -81,9 +81,9 @@ async function aceptar() {
   cambiando.value = true
   try {
     await ordenes.updateEstado(orden.value.id, 'aceptada', { usuario: orden.value.tecnico_nombre })
-    success('OT aceptada')
+    success('Orden aceptada')
   } catch {
-    toastError('No se pudo aceptar la OT')
+    toastError('No se pudo aceptar la orden')
   } finally {
     cambiando.value = false
   }
@@ -108,7 +108,7 @@ function irAEjecutar() {
 
     <EmptyState
       v-else-if="!orden"
-      title="OT no encontrada"
+      title="Orden no encontrada"
       description="No pudimos cargar esta orden de trabajo."
     >
       <template #action>
@@ -200,7 +200,7 @@ function irAEjecutar() {
         <template #header>
           <h2 class="ot-section-title">
             <CheckCircleIcon class="ot-icon" />
-            Cierre de la OT
+            Cierre de la orden
           </h2>
         </template>
         <p class="ot-desc">{{ orden.descripcion_cierre ?? 'Sin descripción de cierre.' }}</p>

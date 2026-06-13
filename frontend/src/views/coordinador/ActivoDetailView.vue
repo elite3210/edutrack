@@ -143,7 +143,7 @@ function tareaEstadoLabel(e) {
           </EduButton>
           <EduButton variant="primary" @click="router.push(`/coordinador/ordenes/nueva?activo=${activo.id}`)">
             <PlusIcon class="detail-icon" />
-            Crear OT
+            Crear orden
           </EduButton>
         </div>
       </header>
@@ -602,7 +602,7 @@ function tareaEstadoLabel(e) {
 }
 .detail-info-grid strong {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--color-text-primary);
   display: inline-flex;
   align-items: center;
