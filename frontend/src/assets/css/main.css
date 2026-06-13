@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+/* ─── Design Tokens — EduTrack AI ─────────────────────────────────────── */
+@theme {
+  /* Fuente */
+  --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* Colores de marca */
+  --color-primary:          #6400BE;
+  --color-primary-hover:    #5200A0;
+  --color-primary-light:    #EDE0FF;
+  --color-secondary:        #8A2BE2;
+
+  /* Semánticos de estado */
+  --color-success:          #1E8449;
+  --color-success-bg:       #EAFAF1;
+  --color-warning:          #D35400;
+  --color-warning-bg:       #FEF5EC;
+  --color-danger:           #C0392B;
+  --color-danger-bg:        #FDEDEC;
+  --color-info:             #2471A3;
+  --color-info-bg:          #EBF5FB;
+  --color-in-progress:      #1A5276;
+  --color-in-progress-bg:   #EAF2FF;
+
+  /* Superficies */
+  --color-bg:               #F7F4FB;
+  --color-surface:          #FFFFFF;
+  --color-border:           #E0D9EE;
+  --color-border-focus:     #6400BE;
+
+  /* Texto */
+  --color-text-primary:     #1A1A2E;
+  --color-text-secondary:   #555555;
+  --color-text-disabled:    #AAAAAA;
+  --color-text-on-primary:  #FFFFFF;
+
+  /* Sombras */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:  0 20px 40px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.06);
+  --shadow-ring: 0 0 0 3px rgba(100,0,190,0.2);
+
+  /* Radios */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+
+  /* Transiciones */
+  --transition-fast: 150ms ease-out;
+  --transition-base: 200ms ease-out;
+  --transition-slow: 300ms ease-in-out;
+
+  /* Espaciado base 4px */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+}
+
+/* ─── Base global ──────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-family-sans);
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Safe areas PWA ───────────────────────────────────────────────────── */
+.safe-top    { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-left   { padding-left: env(safe-area-inset-left); }
+.safe-right  { padding-right: env(safe-area-inset-right); }
+
+/* ─── Skeleton shimmer ─────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -468px 0; }
+  100% { background-position: 468px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #E0D9EE 25%, #F7F4FB 50%, #E0D9EE 75%);
+  background-size: 936px 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: var(--radius-md);
+}
+
+/* ─── Focus visible accesible ──────────────────────────────────────────── */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-ring);
+}
+
+/* ─── Scrollbar sutil ──────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-disabled); }

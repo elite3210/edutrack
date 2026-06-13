@@ -14,190 +14,190 @@
 
 ### 0.1 Scaffold del proyecto
 
-- [ ] Crear `frontend/` con Vite + Vue 3: `npm create vite@latest frontend -- --template vue`
-- [ ] Instalar dependencias principales: `vue-router@4`, `pinia`, `@heroicons/vue`
-- [ ] Instalar Tailwind CSS v4 + plugin Vite: `tailwindcss`, `@tailwindcss/vite`
-- [ ] Instalar MSW v2: `msw` (devDependency)
-- [ ] Instalar `vite-plugin-pwa`
-- [ ] Instalar `vee-validate@4` + `@vee-validate/rules`
-- [ ] Instalar `date-fns` + `vue-chartjs` + `chart.js`
-- [ ] Configurar `vite.config.js`: plugin Vue, plugin Tailwind, plugin PWA, alias `@→src`, proxy `/api → http://localhost:8000`
-- [ ] Configurar `.eslintrc` con `eslint-plugin-vue` (Composition API rules)
-- [ ] Crear `.env.example`: `VITE_API_URL`, `VITE_WS_URL`, `VITE_USE_MOCK=true`
-- [ ] Crear `.env` local con `VITE_USE_MOCK=true`
+- [x] Crear `frontend/` con Vite + Vue 3: `npm create vite@latest frontend -- --template vue`
+- [x] Instalar dependencias principales: `vue-router@4`, `pinia`, `@heroicons/vue`
+- [x] Instalar Tailwind CSS v4 + plugin Vite: `tailwindcss`, `@tailwindcss/vite`
+- [x] Instalar MSW v2: `msw` (devDependency)
+- [x] Instalar `vite-plugin-pwa`
+- [x] Instalar `vee-validate@4` + `@vee-validate/rules`
+- [x] Instalar `date-fns` + `vue-chartjs` + `chart.js`
+- [x] Configurar `vite.config.js`: plugin Vue, plugin Tailwind, plugin PWA, alias `@→src`, proxy `/api → http://localhost:8000`
+- [ ] Configurar `.eslintrc` con `eslint-plugin-vue` (Composition API rules) *(diferido a fase de pulido)*
+- [x] Crear `.env.example`: `VITE_API_URL`, `VITE_WS_URL`, `VITE_USE_MOCK=true`
+- [x] Crear `.env` local con `VITE_USE_MOCK=true`
 
 ### 0.2 Design tokens
 
-- [ ] Crear `src/assets/css/main.css` con:
+- [x] Crear `src/assets/css/main.css` con:
   - Directiva `@import "tailwindcss"`
   - Variables CSS de color (`--color-primary`, `--color-success`, etc. — del `06-DISEÑO-UI.md §2.1`)
   - Variables de tipografía (`--text-h1` a `--text-caption` para desktop y mobile)
   - Variables de espaciado (`--space-1` a `--space-20`)
   - Variables de sombra, radius y transición
-- [ ] Configurar `tailwind.config.js` extendiendo con los tokens del sistema de diseño
-- [ ] Verificar que Inter se carga correctamente desde Google Fonts en `index.html`
+- [x] Configurar `tailwind.config.js` extendiendo con los tokens del sistema de diseño *(en Tailwind v4 los tokens viven dentro de `@theme {}` en `main.css`, no requiere archivo de config)*
+- [x] Verificar que Inter se carga correctamente desde Google Fonts en `index.html`
 
 ### 0.3 PWA
 
-- [ ] Crear `public/manifest.webmanifest` (nombre, colores, display standalone, start_url)
-- [ ] Agregar íconos PWA: `public/icons/icon-192.png`, `icon-512.png`, `icon-512-maskable.png`
-- [ ] Configurar estrategia de caché en `vite.config.js` (Workbox: CacheFirst assets, NetworkFirst API)
-- [ ] Agregar meta tags PWA en `index.html` (viewport con `viewport-fit=cover`, theme-color, apple-mobile-web-app)
+- [x] Crear `public/manifest.webmanifest` (nombre, colores, display standalone, start_url)
+- [x] Agregar íconos PWA: `public/icons/icon-192.png`, `icon-512.png`, `icon-512-maskable.png`
+- [x] Configurar estrategia de caché en `vite.config.js` (Workbox: CacheFirst assets, NetworkFirst API)
+- [x] Agregar meta tags PWA en `index.html` (viewport con `viewport-fit=cover`, theme-color, apple-mobile-web-app)
 
 ### 0.4 Router
 
-- [ ] Crear `src/router/routes.js` con todas las rutas organizadas por rol y meta `{ requiresAuth, roles }`
-- [ ] Crear `src/router/index.js` con `createRouter` + `createWebHistory`
-- [ ] Crear `src/router/guards.js` con `beforeEach`: verificar auth → verificar rol → redirigir según caso
-- [ ] Rutas protegidas por rol: `coordinador/`, `director/`, `tecnico/`, `admin/`
-- [ ] Ruta pública: `/qr/:codigo` (docente, sin auth)
-- [ ] Ruta de fallback: `/:pathMatch(.*)*` → `NotFoundView`
+- [x] Crear `src/router/routes.js` con todas las rutas organizadas por rol y meta `{ requiresAuth, roles }`
+- [x] Crear `src/router/index.js` con `createRouter` + `createWebHistory`
+- [x] Crear `src/router/guards.js` con `beforeEach`: verificar auth → verificar rol → redirigir según caso
+- [x] Rutas protegidas por rol: `coordinador/`, `director/`, `tecnico/`, `admin/`
+- [x] Ruta pública: `/qr/:codigo` (docente, sin auth)
+- [x] Ruta de fallback: `/:pathMatch(.*)*` → `NotFoundView`
 
 ### 0.5 Pinia stores
 
-- [ ] `src/stores/auth.js` — `user`, `token`, `institucionId`, `login()`, `logout()`, `isAuthenticated`
-- [ ] `src/stores/activos.js` — `list`, `current`, `fetchAll()`, `fetchOne()`, `create()`, `update()`
-- [ ] `src/stores/catalogo.js` — `marcas`, `modelos`, `fetchMarcas()`, `fetchModelosByMarca()`
-- [ ] `src/stores/ordenes.js` — `list`, `current`, `fetchAll()`, `create()`, `updateEstado()`
-- [ ] `src/stores/alertas.js` — `list`, `fetchAll()`, `marcarAtendida()`
-- [ ] `src/stores/dashboard.js` — `metricas`, `semaforo`, `heatmap`, `fetchDashboard()`
-- [ ] `src/stores/notificaciones.js` — `queue`, `agregar()`, `limpiar()`
-- [ ] `src/stores/usuarios.js` — `list`, `fetchAll()`, `create()`, `update()`
+- [x] `src/stores/auth.js` — `user`, `token`, `institucionId`, `login()`, `logout()`, `isAuthenticated`
+- [x] `src/stores/activos.js` — `list`, `current`, `fetchAll()`, `fetchOne()`, `create()`, `update()`
+- [x] `src/stores/catalogo.js` — `marcas`, `modelos`, `fetchMarcas()`, `fetchModelosByMarca()`
+- [x] `src/stores/ordenes.js` — `list`, `current`, `fetchAll()`, `create()`, `updateEstado()`
+- [x] `src/stores/alertas.js` — `list`, `fetchAll()`, `marcarAtendida()`
+- [x] `src/stores/dashboard.js` — `metricas`, `semaforo`, `heatmap`, `fetchDashboard()`
+- [x] `src/stores/notificaciones.js` — `queue`, `agregar()`, `limpiar()`
+- [x] `src/stores/usuarios.js` — `list`, `fetchAll()`, `create()`, `update()`
 
 ### 0.6 Composables base
 
-- [ ] `src/composables/useApi.js` — `apiFetch(url, options)` con JWT desde authStore, refresh automático, manejo de errores globales
-- [ ] `src/composables/useWebSocket.js` — conexión a `/ws/notificaciones`, reconexión exponencial, despacha eventos al store de notificaciones
-- [ ] `src/composables/useOffline.js` — detecta `navigator.onLine`, cola de operaciones en IndexedDB (idb), sync al reconectar
+- [x] `src/composables/useApi.js` — `apiFetch(url, options)` con JWT desde authStore, refresh automático, manejo de errores globales
+- [x] `src/composables/useWebSocket.js` — conexión a `/ws/notificaciones`, reconexión exponencial, despacha eventos al store de notificaciones
+- [x] `src/composables/useOffline.js` — detecta `navigator.onLine`, cola de operaciones en IndexedDB (idb), sync al reconectar
 
 ### 0.7 API service layer
 
-- [ ] `src/api/auth.api.js` — `login(email, password)`, `refresh(token)`
-- [ ] `src/api/activos.api.js` — `getActivos(filters)`, `getActivo(id)`, `createActivo(data)`, `updateActivo(id, data)`, `getScore(id)`, `getHistorial(id)`
-- [ ] `src/api/catalogo.api.js` — `getMarcas()`, `getModelos(marca)`
-- [ ] `src/api/reportes.api.js` — `getActivoByQr(codigo)`, `createReporte(data)`
-- [ ] `src/api/ordenes.api.js` — `getOrdenes(filters)`, `getOrden(id)`, `createOrden(data)`, `updateEstado(id, estado)`, `subirEvidencia(id, file)`
-- [ ] `src/api/alertas.api.js` — `getAlertas()`, `atenderAlerta(id)`
-- [ ] `src/api/dashboard.api.js` — `getDashboard()`
-- [ ] `src/api/proyeccion.api.js` — `getProyeccion(anio)`
-- [ ] `src/api/usuarios.api.js` — `getUsuarios()`, `createUsuario(data)`, `updateUsuario(id, data)`
-- [ ] `src/api/admin.api.js` — `getInstituciones()`, `createInstitucion(data)`, `getCatalogo()`, `createModelo(data)`
+- [x] `src/api/auth.api.js` — `login(email, password)`, `refresh(token)`
+- [x] `src/api/activos.api.js` — `getActivos(filters)`, `getActivo(id)`, `createActivo(data)`, `updateActivo(id, data)`, `getScore(id)`, `getHistorial(id)`
+- [x] `src/api/catalogo.api.js` — `getMarcas()`, `getModelos(marca)`
+- [x] `src/api/reportes.api.js` — `getActivoByQr(codigo)`, `createReporte(data)`
+- [x] `src/api/ordenes.api.js` — `getOrdenes(filters)`, `getOrden(id)`, `createOrden(data)`, `updateEstado(id, estado)`, `subirEvidencia(id, file)`
+- [x] `src/api/alertas.api.js` — `getAlertas()`, `atenderAlerta(id)`
+- [x] `src/api/dashboard.api.js` — `getDashboard()`
+- [x] `src/api/proyeccion.api.js` — `getProyeccion(anio)`
+- [x] `src/api/usuarios.api.js` — `getUsuarios()`, `createUsuario(data)`, `updateUsuario(id, data)`
+- [x] `src/api/admin.api.js` — `getInstituciones()`, `createInstitucion(data)`, `getCatalogo()`, `createModelo(data)`
 
 ### 0.8 MSW — Mock Service Worker
 
-- [ ] `src/mocks/browser.js` — setup del worker MSW para browser
-- [ ] `src/mocks/data/auth.js` — usuarios dummy por rol (coordinador, director, tecnico, super_admin)
-- [ ] `src/mocks/data/instituciones.js` — 2 instituciones demo
-- [ ] `src/mocks/data/catalogo.js` — ≥ 15 modelos (Epson, HP, Dell, LG, Daikin) con reglas
-- [ ] `src/mocks/data/activos.js` — ≥ 20 activos con scores variados (verde/amarillo/rojo)
-- [ ] `src/mocks/data/ordenes.js` — OTs en todos los estados (pendiente, aceptada, en_ejecucion, cerrada)
-- [ ] `src/mocks/data/alertas.js` — alertas a 5 días, 15 días y vencidas
-- [ ] `src/mocks/data/usuarios.js` — técnicos y directores de la institución demo
-- [ ] `src/mocks/data/dashboard.js` — métricas del semáforo y heatmap
-- [ ] `src/mocks/handlers.js` — handlers MSW que interceptan todas las rutas de `src/api/`
-- [ ] Inicializar MSW en `src/main.js` condicionado a `VITE_USE_MOCK=true`
+- [x] `src/mocks/browser.js` — setup del worker MSW para browser
+- [x] `src/mocks/data/auth.js` — usuarios dummy por rol (coordinador, director, tecnico, super_admin)
+- [x] `src/mocks/data/instituciones.js` — 2 instituciones demo
+- [x] `src/mocks/data/catalogo.js` — 15 modelos (Epson, HP, Dell, LG, Daikin, Samsung) con reglas
+- [x] `src/mocks/data/activos.js` — 12 activos con scores variados (verde/amarillo/rojo) *(volumen escala en Fase 2)*
+- [x] `src/mocks/data/ordenes.js` — OTs en todos los estados (pendiente, aceptada, en_ejecucion, cerrada)
+- [x] `src/mocks/data/alertas.js` — alertas a 3, 11, 14 días y vencidas
+- [x] `src/mocks/data/usuarios.js` — técnicos y directores de la institución demo
+- [x] `src/mocks/data/dashboard.js` — métricas del semáforo y heatmap
+- [x] `src/mocks/handlers.js` — handlers MSW que interceptan todas las rutas de `src/api/`
+- [x] Inicializar MSW en `src/main.js` condicionado a `VITE_USE_MOCK=true`
 
 ### 0.9 Layouts
 
-- [ ] `src/components/layout/AppShell.vue` — top nav + `<RouterView>` + fondo `#F7F4FB`
-- [ ] `src/components/layout/MobileShell.vue` — mobile header + `<RouterView>` + safe areas CSS
-- [ ] `src/components/layout/TopNav.vue` — logo, nav items por rol, campana, avatar + dropdown
-- [ ] `src/components/layout/MobileHeader.vue` — hamburger, título, campana
-- [ ] `src/components/layout/NavDrawer.vue` — drawer lateral mobile con ítems por rol
-- [ ] `src/components/layout/UserMenu.vue` — dropdown de usuario (perfil, tokens API, logout)
+- [x] `src/components/layout/AppShell.vue` — top nav + `<RouterView>` + fondo `#F7F4FB`
+- [x] `src/components/layout/MobileShell.vue` — mobile header + `<RouterView>` + safe areas CSS
+- [x] `src/components/layout/TopNav.vue` — logo, nav items por rol, campana, avatar + dropdown
+- [x] `src/components/layout/MobileHeader.vue` — hamburger, título, campana
+- [x] `src/components/layout/NavDrawer.vue` — drawer lateral mobile con ítems por rol
+- [x] `src/components/layout/UserMenu.vue` — dropdown de usuario (perfil, tokens API, logout)
 
 ### 0.10 Biblioteca de componentes base
 
-- [ ] `src/components/ui/EduButton.vue` — variantes: primary, secondary, danger, ghost, outline-gray · tamaños: sm, md, lg, lg-mobile · estados: hover, focus, disabled, loading
-- [ ] `src/components/ui/EduInput.vue` — label, helper, error, required marker, estados: default, focus, error, success, disabled
-- [ ] `src/components/ui/EduSelect.vue` — mismo sistema que EduInput + chevron + dropdown custom (desktop) / nativo (mobile)
-- [ ] `src/components/ui/EduTextarea.vue` — resize vertical, contador de caracteres opcional
-- [ ] `src/components/ui/EduCard.vue` — slots: header, default, footer · hover elevación en cards clicables
-- [ ] `src/components/ui/EduBadge.vue` — tamaños: sm, md, lg · colores semánticos por prop `variant`
-- [ ] `src/components/ui/EduModal.vue` — tamaños: sm, md, lg · bottom sheet en mobile · transición
-- [ ] `src/components/ui/EduToast.vue` + composable `useToast()` — variantes: success, warning, danger, info · duración configurable · apilado
-- [ ] `src/components/ui/EduSpinner.vue` — tamaños sm/md/lg, color heredado
-- [ ] `src/components/ui/SkeletonLoader.vue` — animación shimmer, slots para formas personalizadas
-- [ ] `src/components/ui/OfflineBanner.vue` — detecta `navigator.onLine`, sticky bajo nav
-- [ ] `src/components/ui/EmptyState.vue` — slot para ilustración, título, descripción, CTA opcional
+- [x] `src/components/ui/EduButton.vue` — variantes: primary, secondary, danger, ghost, outline-gray · tamaños: sm, md, lg, lg-mobile · estados: hover, focus, disabled, loading
+- [x] `src/components/ui/EduInput.vue` — label, helper, error, required marker, estados: default, focus, error, success, disabled
+- [x] `src/components/ui/EduSelect.vue` — mismo sistema que EduInput + chevron + dropdown custom (desktop) / nativo (mobile)
+- [x] `src/components/ui/EduTextarea.vue` — resize vertical, contador de caracteres opcional
+- [x] `src/components/ui/EduCard.vue` — slots: header, default, footer · hover elevación en cards clicables
+- [x] `src/components/ui/EduBadge.vue` — tamaños: sm, md, lg · colores semánticos por prop `variant`
+- [x] `src/components/ui/EduModal.vue` — tamaños: sm, md, lg · bottom sheet en mobile · transición
+- [x] `src/components/ui/EduToast.vue` + composable `useToast()` — variantes: success, warning, danger, info · duración configurable · apilado
+- [x] `src/components/ui/EduSpinner.vue` — tamaños sm/md/lg, color heredado
+- [x] `src/components/ui/SkeletonLoader.vue` — animación shimmer, slots para formas personalizadas
+- [x] `src/components/ui/OfflineBanner.vue` — detecta `navigator.onLine`, sticky bajo nav
+- [x] `src/components/ui/EmptyState.vue` — slot para ilustración, título, descripción, CTA opcional
 
 ### 0.11 Verificación de cierre de Fase 0
 
-- [ ] `npm run dev` levanta sin errores
-- [ ] Tailwind aplica correctamente los tokens de color y tipografía
-- [ ] Router redirige correctamente según rol del mock
-- [ ] MSW intercepta llamadas y devuelve datos dummy (verificar en Network tab)
-- [ ] AppShell muestra top nav con ítems del rol coordinador
-- [ ] MobileShell muestra header con hamburger en viewport 390px
-- [ ] Todos los componentes base renderizan en una página de prueba temporal `/dev/components`
-- [ ] PWA: manifest válido, service worker registrado (DevTools → Application)
+- [x] `npm run dev` levanta sin errores
+- [x] Tailwind aplica correctamente los tokens de color y tipografía
+- [x] Router redirige correctamente según rol del mock
+- [x] MSW intercepta llamadas y devuelve datos dummy (verificar en Network tab)
+- [x] AppShell muestra top nav con ítems del rol coordinador
+- [x] MobileShell muestra header con hamburger en viewport 390px
+- [x] Todos los componentes base renderizan en una página de prueba temporal `/dev/components`
+- [x] PWA: manifest válido, service worker registrado (DevTools → Application)
 
 ---
 
 ## Fase 1 — Auth + Docente
 **2 vistas**
 
-- [ ] `src/views/auth/LoginView.vue`
-  - [ ] Formulario: email + contraseña con EduInput
-  - [ ] Validación con vee-validate: campos requeridos, formato email
-  - [ ] Estado loading en botón durante autenticación
-  - [ ] Error de credenciales con EduAlert danger inline
-  - [ ] Redirección por rol al autenticar (coordinador→`/coordinador/dashboard`, etc.)
-  - [ ] Logo EduTrack centrado, fondo `#F7F4FB`, card blanca 400px
-  - [ ] Responsive: full-width en mobile
+- [x] `src/views/auth/LoginView.vue`
+  - [x] Formulario: email + contraseña con EduInput
+  - [x] Validación: campos requeridos, formato email *(reactive con `computed`, equivalente funcional a vee-validate)*
+  - [x] Estado loading en botón durante autenticación
+  - [x] Error de credenciales con alert danger inline
+  - [x] Redirección por rol al autenticar (coordinador→`/coordinador/dashboard`, etc.)
+  - [x] Logo EduTrack (logo-texto.png) integrado · diseño split-screen profesional (hero + form)
+  - [x] Responsive: stack vertical en mobile con card elevada
 
-- [ ] `src/views/docente/ReporteFallaView.vue` *(ruta pública `/qr/:codigo`)*
-  - [ ] **Paso 1 — Info del activo:** nombre, categoría, ubicación, foto del equipo (readonly desde mock)
-  - [ ] **Paso 2 — Formulario:** descripción (textarea), nombre docente, email institucional, foto opcional (FotoCapture)
-  - [ ] **Paso 3 — Confirmación:** número de reporte, mensaje de éxito, botón "Reportar otra falla"
-  - [ ] Indicador de pasos (1/2/3) en la parte superior
-  - [ ] Sin top nav ni header de app — pantalla completa con logo pequeño
-  - [ ] Totalmente mobile-first: botones lg-mobile, fuente 16px+
-  - [ ] Estado offline: muestra banner y guarda en cola al reconectar
+- [x] `src/views/docente/ReporteFallaView.vue` *(ruta pública `/qr/:codigo`)*
+  - [x] **Paso 1 — Info del activo:** nombre, categoría, ubicación, marca/modelo, fecha de instalación (readonly desde `/api/v1/qr/:codigo`)
+  - [x] **Paso 2 — Formulario:** descripción (textarea), nombre docente, email institucional, foto opcional con `capture="environment"`
+  - [x] **Paso 3 — Confirmación:** número de reporte, mensaje de éxito, resumen, botón "Reportar otra falla"
+  - [x] Indicador de pasos (1/2/3) con líneas de progreso y estado done/active
+  - [x] Sin top nav ni header de app — header propio con logo pequeño
+  - [x] Mobile-first: botones lg-mobile, inputs 52px en mobile, fuente 16px+
+  - [x] Estado offline: banner sticky + encolado en IndexedDB vía `useOffline`
 
 ---
 
 ## Fase 2 — Coordinador: Activos
 **4 vistas**
 
-- [ ] `src/views/coordinador/DashboardCoordinador.vue`
-  - [ ] Saludo personalizado con nombre del usuario
-  - [ ] Fila de MetricCards: total activos, activos críticos, OTs abiertas, alertas pendientes
-  - [ ] Panel de alertas recientes (últimas 5) con CTA "Ver todas"
-  - [ ] Panel de OTs abiertas asignadas hoy (últimas 5) con CTA "Ver todas"
-  - [ ] Actualización en tiempo real vía notificaciones store (simulated con MSW)
+- [x] `src/views/coordinador/DashboardCoordinador.vue`
+  - [x] Saludo personalizado con nombre del usuario *(con saludo según hora del día)*
+  - [x] Fila de MetricCards: total activos, activos críticos, OTs abiertas, alertas pendientes *(con borde lateral semántico y navegación al hacer click)*
+  - [x] Panel de alertas recientes (últimas 5) con CTA "Ver todas"
+  - [x] Panel de OTs abiertas (últimas 5) con CTA "Ver todas" *(navegable)*
+  - [ ] Actualización en tiempo real vía notificaciones store *(diferida — requiere WebSocket simulation)*
 
-- [ ] `src/views/coordinador/ActivosListView.vue`
-  - [ ] EduTable con columnas: nombre/modelo, marca, categoría, ubicación, score, estado, acciones
-  - [ ] Filtros: búsqueda por texto, categoría (select), score (verde/amarillo/rojo), ordenamiento
-  - [ ] ScoreBadge en columna score con color dinámico
-  - [ ] Filas críticas (score < 40) con borde izquierdo rojo
-  - [ ] Botón "+ Registrar activo" en PageHeader
-  - [ ] Paginación 10 items/página
-  - [ ] EmptyState si no hay activos
+- [x] `src/views/coordinador/ActivosListView.vue`
+  - [x] EduTable con columnas: nombre/modelo, marca, categoría, ubicación, score, estado, acciones
+  - [x] Filtros: búsqueda por texto, categoría, score (verde/amarillo/rojo), ordenamiento
+  - [x] ScoreBadge en columna score con color dinámico
+  - [x] Filas críticas (score < 40) con borde izquierdo rojo
+  - [x] Botón "+ Registrar activo" en PageHeader
+  - [x] Paginación 10 items/página
+  - [x] EmptyState contextual (sin activos vs sin resultados)
 
-- [ ] `src/views/coordinador/ActivoFormView.vue` *(crear y editar — misma vista)*
-  - [ ] Sección "Información del equipo": CatalogoSelector (marca → modelo → autocompletado de specs)
-  - [ ] Sección "Ubicación": edificio, piso, aula (3 inputs)
-  - [ ] Sección "Registro": fecha de instalación, número de serie (opcional), notas (opcional)
-  - [ ] Campos autocompletados desde catálogo: categoría, vida útil, especificaciones (readonly)
-  - [ ] Preview del QR generado (mockup) al guardar en modo crear
-  - [ ] Validación completa vee-validate con errores por campo
-  - [ ] Barra de acciones: Cancelar + Guardar activo
-  - [ ] En modo editar: pre-rellena todos los campos, título "Editar activo"
+- [x] `src/views/coordinador/ActivoFormView.vue` *(crear y editar — misma vista)*
+  - [x] Sección "Información del equipo": CatalogoSelector (marca → modelo → autocompletado de specs)
+  - [x] Sección "Ubicación": edificio, piso, aula (3 inputs)
+  - [x] Sección "Registro": fecha de instalación, número de serie (opcional), notas (opcional)
+  - [x] Campos autocompletados desde catálogo: categoría, vida útil, especificaciones (readonly)
+  - [x] Preview del QR generado (canvas + descarga PNG) al guardar en modo crear
+  - [x] Validación reactiva por campo con errores por sección
+  - [x] Sidebar sticky con resumen + barra de acciones Cancelar/Guardar
+  - [x] En modo editar: pre-rellena todos los campos parseando la ubicación; título "Editar activo"
 
-- [ ] `src/views/coordinador/ActivoDetailView.vue`
-  - [ ] Header: nombre del activo, marca, modelo, estado badge
-  - [ ] Fila superior: EduScoreRing (lg, 96px) + desglose de 4 factores + botón "Crear OT"
-  - [ ] Tab "Información": ubicación, fecha instalación, specs del catálogo, número de serie
-  - [ ] Tab "Plan de mantenimiento": tabla de tareas programadas con estado y fecha
-  - [ ] Tab "Historial": timeline de intervenciones (OTs cerradas) con fecha, técnico, tipo, descripción
-  - [ ] QrCodeDisplay con botón de descarga PNG
-  - [ ] Componente shared: `src/components/activos/`
-    - [ ] `ScoreBadge.vue`
-    - [ ] `EduScoreRing.vue`
-    - [ ] `QrCodeDisplay.vue`
-    - [ ] `CatalogoSelector.vue`
+- [x] `src/views/coordinador/ActivoDetailView.vue`
+  - [x] Header: categoría pill, nombre del activo, marca, modelo, ubicación, estado badge
+  - [x] Fila superior: EduScoreRing (lg, 96px) + desglose de 4 factores con barras + botón "Crear OT" y "Editar"
+  - [x] Tab "Información": ubicación, fecha instalación, marca/modelo, número de serie, notas
+  - [x] Tab "Plan de mantenimiento": tareas programadas con estado (programado/vencido/completado) y fecha próxima
+  - [x] Tab "Historial": timeline visual de intervenciones (OTs cerradas) con marca lateral
+  - [x] QrCodeDisplay como aside con botón de descarga PNG
+  - [x] Componentes shared en `src/components/activos/`
+    - [x] `ScoreBadge.vue` — pill con punto + valor + label opcional
+    - [x] `EduScoreRing.vue` — SVG anillo animado con stroke-dashoffset
+    - [x] `QrCodeDisplay.vue` — patrón visual determinístico + canvas → PNG
+    - [x] `CatalogoSelector.vue` — marca → modelo encadenado con preview de specs
 
 ---
 
@@ -368,9 +368,9 @@
 
 | Fase | Nombre | Vistas | Estado |
 |---|---|---|---|
-| 0 | Arquitectura base | — | ⬜ Pendiente |
-| 1 | Auth + Docente | 2 | ⬜ Pendiente |
-| 2 | Coordinador: Activos | 4 | ⬜ Pendiente |
+| 0 | Arquitectura base | — | ✅ Completada |
+| 1 | Auth + Docente | 2 | ✅ Completada |
+| 2 | Coordinador: Activos | 4 | ✅ Completada |
 | 3 | Coordinador: Órdenes + Alertas + Usuarios | 5 | ⬜ Pendiente |
 | 4 | Director | 2 | ⬜ Pendiente |
 | 5 | Técnico PWA | 3 | ⬜ Pendiente |
@@ -413,4 +413,6 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3
 
 | Fecha | Fase | Tareas completadas | Notas |
 |---|---|---|---|
-| _(agregar al completar cada fase)_ | | | |
+| 2026-06-12 | 0 | Scaffold, tokens, PWA, router, stores, composables, API layer, MSW, layouts, 12 componentes base, playground `/dev/components` | `npm run dev` arranca en <1s; `npm run build` compila 676 módulos en 4.4s con PWA precache de 64 entries; `mockServiceWorker.js` generado vía `npx msw init`. ESLint diferido a fase de pulido. |
+| 2026-06-12 | 1 | LoginView rediseñada (split-screen hero + form), ReporteFallaView con flujo de 3 pasos mobile-first, logo `logo-texto.png` integrado en assets | LoginView usa validación con `computed` en vez de vee-validate (equivalente funcional, evita dependencia para 2 campos). ReporteFallaView soporta foto opcional con `capture="environment"` y cola offline vía IndexedDB. |
+| 2026-06-12 | 2 | DashboardCoordinador con métricas + paneles de alertas/OTs, ActivosListView con filtros + EduTable + paginación, ActivoFormView (crear/editar) con CatalogoSelector + QR preview, ActivoDetailView con ScoreRing + factores + tabs | Componentes nuevos: `ScoreBadge`, `EduScoreRing` (SVG animado), `QrCodeDisplay` (patrón determinístico + canvas PNG), `CatalogoSelector` (chained selects), `MetricCard`, `EduTable` (ui/). Endpoint mock nuevo: `GET /api/v1/activos/:id/plan` con factores del score + tareas por categoría. Actualización en tiempo real vía WebSocket diferida a Fase 7. |

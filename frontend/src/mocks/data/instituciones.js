@@ -1,0 +1,28 @@
+export const instituciones = [
+  {
+    id: 'inst-001',
+    nombre_legal: 'Colegio San Agustín del Perú S.A.C.',
+    nombre_corto: 'Colegio San Agustín',
+    ruc: '20512345678',
+    email_contacto: 'contacto@sanagustin.edu.pe',
+    telefono: '+51 1 555-1234',
+    direccion: 'Av. Javier Prado 1500, San Isidro, Lima',
+    activa: true,
+    creada_en: '2024-01-15',
+    total_activos: 12,
+    total_usuarios: 3,
+  },
+  {
+    id: 'inst-002',
+    nombre_legal: 'Innova Schools Lima Norte S.A.C.',
+    nombre_corto: 'Innova Lima Norte',
+    ruc: '20498765432',
+    email_contacto: 'admin@innova-norte.edu.pe',
+    telefono: '+51 1 555-5678',
+    direccion: 'Av. Túpac Amaru 3500, Comas, Lima',
+    activa: true,
+    creada_en: '2024-06-20',
+    total_activos: 8,
+    total_usuarios: 2,
+  },
+]
