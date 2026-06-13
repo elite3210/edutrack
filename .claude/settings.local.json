@@ -10,7 +10,10 @@
       "Bash(echo \"---EXIT:$?\")",
       "Bash(echo \"EXIT:$?\")",
       "Bash(npx msw *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Administrador\\\\Desktop\\\\TG\\\\Courses\\\\edutrack\" -Force)",
+      "Bash(Select-Object -Property FullName, PSIsContainer)",
+      "Bash(Sort-Object FullName)"
     ]
   }
 }

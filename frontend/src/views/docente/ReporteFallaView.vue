@@ -37,6 +37,8 @@ const form = reactive({
   foto_preview:   null,
 })
 
+const fotoInputRef = ref(null)
+
 const reporte = ref(null)
 
 const touched = reactive({
@@ -148,6 +150,15 @@ function reiniciar() {
 
 <template>
   <div class="rf-page">
+    <!-- Input de foto fuera del form para evitar reload en iOS/Android al volver de cámara -->
+    <input
+      ref="fotoInputRef"
+      type="file"
+      accept="image/*"
+      style="display:none; position:absolute"
+      @change="handleFoto"
+    />
+
     <!-- Banner offline -->
     <Transition name="slide-down">
       <div v-if="!isOnline" class="rf-offline">
@@ -298,17 +309,15 @@ function reiniciar() {
               Foto del problema <span class="rf-foto-optional">(opcional)</span>
             </label>
 
-            <div v-if="!form.foto_preview" class="rf-foto-empty">
+            <button
+              v-if="!form.foto_preview"
+              type="button"
+              class="rf-foto-empty"
+              @click="fotoInputRef.click()"
+            >
               <CameraIcon class="rf-foto-empty-icon" />
               <span class="rf-foto-empty-text">Toma una foto del equipo</span>
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                class="rf-foto-input"
-                @change="handleFoto"
-              />
-            </div>
+            </button>
 
             <div v-else class="rf-foto-preview-wrap">
               <img :src="form.foto_preview" alt="Foto del problema" class="rf-foto-preview" />
@@ -729,17 +738,18 @@ function reiniciar() {
   font-weight: 400;
 }
 .rf-foto-empty {
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  width: 100%;
   border: 2px dashed var(--color-border);
   border-radius: var(--radius-md);
   padding: 24px;
   background: var(--color-surface);
   cursor: pointer;
+  font-family: inherit;
   transition: border-color var(--transition-fast), background var(--transition-fast);
 }
 .rf-foto-empty:hover {
@@ -755,14 +765,6 @@ function reiniciar() {
   font-size: 14px;
   font-weight: 500;
   color: var(--color-text-secondary);
-}
-.rf-foto-input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
 }
 .rf-foto-preview-wrap {
   position: relative;
