@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore }      from '@/stores/auth'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useActivosStore }   from '@/stores/activos'
+import { useOrdenesStore }   from '@/stores/ordenes'
 import AppShell      from '@/components/layout/AppShell.vue'
 import EduCard       from '@/components/ui/EduCard.vue'
 import EduSelect     from '@/components/ui/EduSelect.vue'
@@ -28,6 +29,7 @@ const router    = useRouter()
 const auth      = useAuthStore()
 const dashboard = useDashboardStore()
 const activos   = useActivosStore()
+const ordenes   = useOrdenesStore()
 
 // ─── Filtros ──────────────────────────────────────────────────
 const categoriaFiltro = ref('')
@@ -46,16 +48,99 @@ const edificioOptions = computed(() => [
 ])
 
 // ─── Datos derivados ──────────────────────────────────────────
-const heatmapFiltrado = computed(() => {
-  let list = dashboard.heatmap ?? []
-  if (edificioFiltro.value) list = list.filter(h => h.edificio === edificioFiltro.value)
+
+// Lookup: aula → edificio (built from heatmap API rows)
+const aulaEdificioMap = computed(() =>
+  new Map((dashboard.heatmap ?? []).map(h => [h.aula, h.edificio]))
+)
+
+// Aulas that belong to the selected building
+const aulasPorEdificio = computed(() => {
+  if (!edificioFiltro.value) return null
+  return new Set(
+    (dashboard.heatmap ?? [])
+      .filter(h => h.edificio === edificioFiltro.value)
+      .map(h => h.aula),
+  )
+})
+
+// Activos filtered by BOTH category and building
+const activosFiltrados = computed(() => {
+  let list = activos.list
+  if (categoriaFiltro.value) {
+    list = list.filter(a => a.categoria === categoriaFiltro.value)
+  }
+  if (edificioFiltro.value && aulasPorEdificio.value) {
+    list = list.filter(a => aulasPorEdificio.value.has(a.ubicacion))
+  }
   return list
 })
 
-const m = computed(() => dashboard.metricas ?? {
-  total_activos: 0, activos_criticos: 0, ots_abiertas: 0, costo_estimado_mes: 0,
+const activoIdsFiltrados = computed(() => new Set(activosFiltrados.value.map(a => a.id)))
+
+// Heatmap recomputed from filtered activos when any filter is active
+const heatmapFiltrado = computed(() => {
+  const raw = dashboard.heatmap ?? []
+  if (!categoriaFiltro.value && !edificioFiltro.value) return raw
+
+  const aulaMap = aulaEdificioMap.value
+  const byAula  = new Map()
+
+  for (const a of activosFiltrados.value) {
+    const edificio = aulaMap.get(a.ubicacion)
+    if (!edificio) continue
+    if (!byAula.has(a.ubicacion)) {
+      byAula.set(a.ubicacion, { aula: a.ubicacion, edificio, scores: [] })
+    }
+    byAula.get(a.ubicacion).scores.push(a.score)
+  }
+
+  return [...byAula.values()].map(({ aula, edificio, scores }) => ({
+    aula,
+    edificio,
+    score_promedio: scores.length
+      ? Math.round(scores.reduce((s, x) => s + x, 0) / scores.length)
+      : 0,
+    activos: scores.length,
+  }))
 })
-const top5 = computed(() => (dashboard.topCriticos ?? []).slice(0, 5))
+
+const m = computed(() => {
+  if (!categoriaFiltro.value) {
+    return dashboard.metricas ?? { total_activos: 0, activos_criticos: 0, ots_abiertas: 0, costo_estimado_mes: 0 }
+  }
+  const list = activosFiltrados.value
+  const otsAbiertas = ordenes.list.filter(o =>
+    ['pendiente', 'aceptada', 'en_ejecucion'].includes(o.estado) &&
+    activoIdsFiltrados.value.has(o.activo_id),
+  ).length
+  return {
+    total_activos:    list.length,
+    activos_criticos: list.filter(a => a.score < 40).length,
+    ots_abiertas:     otsAbiertas,
+    costo_estimado_mes: dashboard.metricas?.costo_estimado_mes ?? 0,
+  }
+})
+
+const semaforoFiltrado = computed(() => {
+  if (!categoriaFiltro.value) return dashboard.semaforo
+  const list  = activosFiltrados.value
+  const total = list.length
+  if (total === 0) return { verde: { count: 0, pct: 0 }, amarillo: { count: 0, pct: 0 }, rojo: { count: 0, pct: 0 } }
+  const verde    = list.filter(a => a.score >= 70).length
+  const amarillo = list.filter(a => a.score >= 40 && a.score < 70).length
+  const rojo     = list.filter(a => a.score < 40).length
+  return {
+    verde:    { count: verde,    pct: Math.round(verde    / total * 100) },
+    amarillo: { count: amarillo, pct: Math.round(amarillo / total * 100) },
+    rojo:     { count: rojo,     pct: Math.round(rojo     / total * 100) },
+  }
+})
+
+const top5 = computed(() => {
+  if (!categoriaFiltro.value) return (dashboard.topCriticos ?? []).slice(0, 5)
+  return [...activosFiltrados.value].sort((a, b) => a.score - b.score).slice(0, 5)
+})
 
 const nombre = computed(() => auth.user?.nombre?.split(' ')[0] ?? 'Director')
 
@@ -78,7 +163,10 @@ function formatCosto(n) {
 
 onMounted(async () => {
   await refresh()
-  if (activos.list.length === 0) await activos.fetchAll()
+  const promises = []
+  if (activos.list.length === 0) promises.push(activos.fetchAll())
+  if (ordenes.list.length === 0) promises.push(ordenes.fetchAll())
+  await Promise.all(promises)
   timer = setInterval(refresh, 30000)
 })
 onUnmounted(() => { if (timer) clearInterval(timer) })
@@ -106,11 +194,11 @@ onUnmounted(() => { if (timer) clearInterval(timer) })
     <div class="dd-filters">
       <div>
         <EduSelect v-model="categoriaFiltro" :options="categoriaOptions" />
-        <p class="dd-filter-hint">Filtra métricas y top críticos</p>
+        <p class="dd-filter-hint">Filtra todas las métricas y el mapa</p>
       </div>
       <div>
         <EduSelect v-model="edificioFiltro" :options="edificioOptions" />
-        <p class="dd-filter-hint">Filtra el mapa de calor</p>
+        <p class="dd-filter-hint">Filtra todas las métricas y el mapa</p>
       </div>
     </div>
 
@@ -168,7 +256,7 @@ onUnmounted(() => { if (timer) clearInterval(timer) })
         <div v-if="dashboard.loading && !dashboard.semaforo?.verde?.count" class="dd-chart-skeleton">
           <SkeletonLoader width="220px" height="220px" style="border-radius: 9999px" />
         </div>
-        <SemaforoChart v-else :semaforo="dashboard.semaforo" :size="240" />
+        <SemaforoChart v-else :semaforo="semaforoFiltrado" :size="240" />
       </EduCard>
 
       <!-- Top 5 críticos -->

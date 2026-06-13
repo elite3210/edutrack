@@ -12,6 +12,7 @@ const dimensions = {
   sm: { diameter: 56,  stroke: 6,  fontSize: 16 },
   md: { diameter: 76,  stroke: 7,  fontSize: 22 },
   lg: { diameter: 96,  stroke: 9,  fontSize: 28 },
+  xl: { diameter: 130, stroke: 11, fontSize: 38 },
 }
 const dim = computed(() => dimensions[props.size] ?? dimensions.md)
 

@@ -313,14 +313,20 @@ onMounted(async () => {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 16px;
+  padding: 10px 14px;
   margin-bottom: 16px;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+@media (max-width: 900px) {
+  .activos-filters { flex-direction: column; align-items: stretch; padding: 14px; }
 }
 .activos-search {
   position: relative;
+  flex: 1;
+  min-width: 180px;
 }
 .activos-search-icon {
   position: absolute;
@@ -367,10 +373,11 @@ onMounted(async () => {
 .activos-search-clear:hover { background: var(--color-primary-light); color: var(--color-primary); }
 
 .activos-filter-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  gap: 12px;
-  align-items: end;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+  flex-wrap: wrap;
 }
 .activos-filter-clear {
   height: 44px;
@@ -383,18 +390,12 @@ onMounted(async () => {
   font-size: 13px;
   font-weight: 500;
   color: var(--color-text-secondary);
+  white-space: nowrap;
   transition: all var(--transition-fast);
 }
 .activos-filter-clear:hover {
   border-color: var(--color-danger);
   color: var(--color-danger);
-}
-
-@media (max-width: 768px) {
-  .activos-filter-group { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 480px) {
-  .activos-filter-group { grid-template-columns: 1fr; }
 }
 
 /* Celdas tabla */

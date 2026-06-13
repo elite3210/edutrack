@@ -148,14 +148,20 @@ function tareaEstadoLabel(e) {
         </div>
       </header>
 
-      <!-- Score + factores + QR -->
+      <!-- Score + factores + QR — unified card -->
       <section class="detail-score-row">
         <EduCard>
-          <div class="detail-score-content">
-            <div class="detail-score-ring">
-              <EduScoreRing :score="activo.score" size="lg" show-label />
-              <p class="detail-score-help">Score de salud calculado<br>por el motor EduTrack AI.</p>
+          <div class="detail-score-layout">
+
+            <!-- Score ring -->
+            <div class="detail-score-ring-col">
+              <EduScoreRing :score="activo.score" size="xl" show-label />
+              <p class="detail-score-help">Score calculado por<br>el motor EduTrack AI.</p>
             </div>
+
+            <div class="detail-score-sep" />
+
+            <!-- Factor bars -->
             <div class="detail-factores">
               <p class="detail-factores-title">Desglose del score</p>
               <div v-if="factores.length === 0" class="detail-factores-empty">
@@ -174,17 +180,18 @@ function tareaEstadoLabel(e) {
                 </li>
               </ul>
             </div>
+
+            <div class="detail-score-sep" />
+
+            <!-- QR -->
+            <div class="detail-qr-col">
+              <p class="detail-qr-title">Código QR del activo</p>
+              <p class="detail-qr-help">Pégalo en el equipo para reportes vía celular.</p>
+              <QrCodeDisplay :codigo="activo.codigo_qr" :size="140" />
+            </div>
+
           </div>
         </EduCard>
-
-        <!-- QR sidebar -->
-        <aside class="detail-qr-aside">
-          <EduCard padding="sm">
-            <p class="detail-qr-title">Código QR del activo</p>
-            <p class="detail-qr-help">Pégalo en el equipo para reportes vía celular.</p>
-            <QrCodeDisplay :codigo="activo.codigo_qr" :size="160" />
-          </EduCard>
-        </aside>
       </section>
 
       <!-- Tabs -->
@@ -405,48 +412,73 @@ function tareaEstadoLabel(e) {
   flex-shrink: 0;
 }
 
-/* Score row */
+/* Score row — unified single card */
 .detail-score-row {
-  display: grid;
-  grid-template-columns: 1fr 240px;
-  gap: 20px;
-  margin-bottom: 28px;
-  align-items: start;
-}
-@media (max-width: 980px) {
-  .detail-score-row { grid-template-columns: 1fr; }
+  margin-bottom: 16px;
 }
 
-.detail-score-content {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 32px;
-  align-items: center;
+.detail-score-layout {
+  display: flex;
+  align-items: stretch;
 }
-@media (max-width: 640px) {
-  .detail-score-content { grid-template-columns: 1fr; }
-}
-.detail-score-ring {
+
+.detail-score-ring-col {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 4px 28px 4px 4px;
+  flex-shrink: 0;
+  min-width: 160px;
 }
+
+.detail-score-sep {
+  width: 1px;
+  background: var(--color-border);
+  flex-shrink: 0;
+  margin: 0 28px;
+}
+
 .detail-score-help {
   font-size: 11px;
   color: var(--color-text-secondary);
   margin: 0;
   text-align: center;
-  max-width: 140px;
+  max-width: 130px;
   line-height: 1.4;
 }
+
+.detail-factores {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 0;
+}
+
+.detail-qr-col {
+  flex-shrink: 0;
+  width: 196px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 4px 4px 0;
+  text-align: center;
+}
+
+@media (max-width: 980px) {
+  .detail-score-layout { flex-direction: column; }
+  .detail-score-sep { width: 100%; height: 1px; margin: 20px 0; }
+  .detail-score-ring-col { padding: 4px; }
+  .detail-qr-col { width: 100%; }
+}
+
 .detail-factores-title {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--color-text-secondary);
-  margin: 0 0 12px;
+  margin: 0 0 14px;
 }
 .detail-factores-empty {
   font-size: 13px;
@@ -460,12 +492,9 @@ function tareaEstadoLabel(e) {
   list-style: none;
   padding: 0;
   margin: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px 24px;
-}
-@media (max-width: 760px) {
-  .detail-factores-list { grid-template-columns: 1fr; }
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 .detail-factor-head {
   display: flex;
@@ -504,10 +533,6 @@ function tareaEstadoLabel(e) {
   line-height: 1.4;
 }
 
-.detail-qr-aside {
-  display: flex;
-}
-.detail-qr-aside :deep(.edu-card) { width: 100%; }
 .detail-qr-title {
   font-size: 13px;
   font-weight: 700;
@@ -518,6 +543,7 @@ function tareaEstadoLabel(e) {
   font-size: 11.5px;
   color: var(--color-text-secondary);
   margin: 0 0 12px;
+  line-height: 1.4;
 }
 
 /* Tabs */

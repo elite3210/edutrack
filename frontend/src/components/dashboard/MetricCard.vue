@@ -48,20 +48,6 @@ defineProps({
   box-shadow: var(--shadow-md);
   border-color: var(--color-primary);
 }
-.metric-card::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 3px;
-  background: var(--color-border);
-  transition: background var(--transition-fast);
-}
-.metric-card--primary::before { background: var(--color-primary); }
-.metric-card--success::before { background: var(--color-success); }
-.metric-card--warning::before { background: var(--color-warning); }
-.metric-card--danger::before  { background: var(--color-danger);  }
-.metric-card--info::before    { background: var(--color-info);    }
-
 .metric-card-top {
   display: flex;
   align-items: center;

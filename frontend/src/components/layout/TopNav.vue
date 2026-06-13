@@ -12,6 +12,14 @@ import {
   FireIcon,
   ExclamationTriangleIcon,
   ClockIcon,
+  Squares2X2Icon,
+  ComputerDesktopIcon,
+  ClipboardDocumentListIcon,
+  SparklesIcon,
+  UsersIcon,
+  PresentationChartLineIcon,
+  BuildingOffice2Icon,
+  BookOpenIcon,
 } from '@heroicons/vue/24/outline'
 import logoTexto from '@/assets/img/logo-texto.png'
 
@@ -23,19 +31,19 @@ const route   = useRoute()
 const navItems = computed(() => {
   const rol = auth.user?.rol
   if (rol === 'coordinador') return [
-    { label: 'Dashboard', to: '/coordinador/dashboard' },
-    { label: 'Activos',  to: '/coordinador/activos' },
-    { label: 'Órdenes', to: '/coordinador/ordenes' },
-    { label: 'Alertas', to: '/coordinador/alertas' },
-    { label: 'Usuarios', to: '/coordinador/usuarios' },
+    { label: 'Dashboard', to: '/coordinador/dashboard', icon: Squares2X2Icon },
+    { label: 'Activos',   to: '/coordinador/activos',   icon: ComputerDesktopIcon },
+    { label: 'Órdenes',   to: '/coordinador/ordenes',   icon: ClipboardDocumentListIcon },
+    { label: 'Alertas',   to: '/coordinador/alertas',   icon: SparklesIcon },
+    { label: 'Usuarios',  to: '/coordinador/usuarios',  icon: UsersIcon },
   ]
   if (rol === 'director') return [
-    { label: 'Dashboard',  to: '/director/dashboard' },
-    { label: 'Proyección', to: '/director/proyeccion' },
+    { label: 'Dashboard',  to: '/director/dashboard',  icon: Squares2X2Icon },
+    { label: 'Proyección', to: '/director/proyeccion', icon: PresentationChartLineIcon },
   ]
   if (rol === 'super_admin') return [
-    { label: 'Instituciones', to: '/admin/instituciones' },
-    { label: 'Catálogo',      to: '/admin/catalogo' },
+    { label: 'Instituciones', to: '/admin/instituciones', icon: BuildingOffice2Icon },
+    { label: 'Catálogo',      to: '/admin/catalogo',      icon: BookOpenIcon },
   ]
   return []
 })
@@ -101,6 +109,7 @@ function logout() {
         :to="item.to"
         :class="['nav-item', { 'nav-item--active': isActive(item.to) }]"
       >
+        <component :is="item.icon" class="nav-item-icon" />
         {{ item.label }}
       </RouterLink>
     </nav>
@@ -219,7 +228,10 @@ function logout() {
   flex: 1;
 }
 .nav-item {
-  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
   border-radius: 9999px;
   font-size: 14px;
   font-weight: 500;
@@ -228,6 +240,7 @@ function logout() {
   transition: background var(--transition-fast), color var(--transition-fast);
   white-space: nowrap;
 }
+.nav-item-icon { width: 15px; height: 15px; flex-shrink: 0; }
 .nav-item:hover {
   background: var(--color-primary-light);
   color: var(--color-primary);

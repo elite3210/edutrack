@@ -299,6 +299,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  width: 100%;
 }
 .dashboard-panel-title {
   display: flex;
@@ -374,10 +375,10 @@ onMounted(async () => {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  padding: 3px 8px;
-  border-radius: 4px;
-  min-width: 72px;
+  padding: 3px 10px;
+  border-radius: 9999px;
   text-align: center;
+  white-space: nowrap;
 }
 .dashboard-list-badge--danger  { background: var(--color-danger-bg);  color: var(--color-danger);  }
 .dashboard-list-badge--warning { background: var(--color-warning-bg); color: var(--color-warning); }
@@ -418,17 +419,17 @@ onMounted(async () => {
   font-size: 12px;
   font-weight: 600;
   color: var(--color-primary);
-  background: transparent;
-  border: 1px solid var(--color-border);
+  background: var(--color-primary-light);
+  border: none;
   border-radius: 6px;
   padding: 6px 10px;
   cursor: pointer;
   font-family: inherit;
-  transition: all var(--transition-fast);
+  transition: background var(--transition-fast);
 }
 .dashboard-list-action:hover {
-  background: var(--color-primary-light);
-  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
 }
 .dashboard-skeletons {
   display: flex;
