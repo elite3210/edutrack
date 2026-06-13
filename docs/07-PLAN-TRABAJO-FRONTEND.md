@@ -250,26 +250,26 @@
 ## Fase 4 — Director
 **2 vistas**
 
-- [ ] `src/views/director/DashboardDirector.vue`
-  - [ ] SemaforoChart (donut Chart.js) grande como elemento principal — % verde/amarillo/rojo
-  - [ ] Fila de MetricCards: total activos, activos críticos, OTs abiertas, costo estimado mes
-  - [ ] HeatmapGrid por aula: grilla de celdas coloreadas por score promedio del aula
-  - [ ] Top 5 activos críticos: lista con ScoreRing sm, nombre, ubicación, score, botón "Ver"
-  - [ ] Actualización simulada vía notificaciones store cada 30s (setInterval en mock)
-  - [ ] Sin botones de acción (rol solo lectura ejecutiva)
-  - [ ] Filtros: categoría, edificio
-  - [ ] Componentes: `src/components/dashboard/`
-    - [ ] `SemaforoChart.vue`
-    - [ ] `MetricCard.vue`
-    - [ ] `HeatmapGrid.vue`
+- [x] `src/views/director/DashboardDirector.vue`
+  - [x] SemaforoChart (donut Chart.js) con total al centro y leyenda detallada (count + %) como elemento principal
+  - [x] Fila de MetricCards: total activos, activos críticos, OTs abiertas, costo estimado mes (formato PEN)
+  - [x] HeatmapGrid agrupado por edificio, con celdas coloreadas + leyenda + tooltip
+  - [x] Top 5 activos críticos: lista con ScoreRing sm, nombre, ubicación, navegación al detalle
+  - [x] Actualización simulada cada 30 s vía `setInterval` con indicador de "última actualización"
+  - [x] Sin botones de acción (rol solo lectura ejecutiva)
+  - [x] Filtros: categoría, edificio (afectan el heatmap)
+  - [x] Componentes: `src/components/dashboard/`
+    - [x] `SemaforoChart.vue` (vue-chartjs Doughnut con cutout 68%)
+    - [x] `MetricCard.vue` *(ya existía de Fase 2)*
+    - [x] `HeatmapGrid.vue` (grid auto-fill agrupado por edificio)
 
-- [ ] `src/views/director/ProyeccionView.vue`
-  - [ ] Selector de año (año actual y siguiente)
-  - [ ] Tabla: activo, tipo de mantenimiento, fecha programada, costo de referencia
-  - [ ] Resumen: costo total preventivos, costo estimado correctivos, total del periodo
-  - [ ] Sección "Candidatos a reemplazo": activos con score < 40 + vida útil < 20% restante
-  - [ ] Botón "Exportar PDF" (html2pdf.js sobre el DOM de la vista)
-  - [ ] Costos de referencia editables por el coordinador (nota al pie en esta vista: "Configurable desde el perfil del coordinador")
+- [x] `src/views/director/ProyeccionView.vue`
+  - [x] Selector de año (año actual y siguiente)
+  - [x] Cronograma mensual: items agrupados por mes con subtotal + tabla por mes (fecha, activo, categoría, tipo, costo)
+  - [x] Resumen: 3 cards (preventivos, correctivos estimados, total general resaltado)
+  - [x] Sección "Candidatos a reemplazo": cards con score, vida útil restante, antigüedad, costo de referencia y motivo
+  - [x] Botón "Exportar PDF" → `window.print()` con CSS `@media print` (sin html2pdf.js para evitar dependencia)
+  - [x] Nota informativa sobre costos de referencia configurables desde el perfil del coordinador
 
 ---
 
@@ -373,7 +373,7 @@
 | 1 | Auth + Docente | 2 | ✅ Completada |
 | 2 | Coordinador: Activos | 4 | ✅ Completada |
 | 3 | Coordinador: Órdenes + Alertas + Usuarios | 5 | ✅ Completada |
-| 4 | Director | 2 | ⬜ Pendiente |
+| 4 | Director | 2 | ✅ Completada |
 | 5 | Técnico PWA | 3 | ⬜ Pendiente |
 | 6 | Super Admin | 4 | ⬜ Pendiente |
 | 7 | Comunes + pulido | 2 + revisión | ⬜ Pendiente |
@@ -418,3 +418,4 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3
 | 2026-06-12 | 1 | LoginView rediseñada (split-screen hero + form), ReporteFallaView con flujo de 3 pasos mobile-first, logo `logo-texto.png` integrado en assets | LoginView usa validación con `computed` en vez de vee-validate (equivalente funcional, evita dependencia para 2 campos). ReporteFallaView soporta foto opcional con `capture="environment"` y cola offline vía IndexedDB. |
 | 2026-06-12 | 2 | DashboardCoordinador con métricas + paneles de alertas/OTs, ActivosListView con filtros + EduTable + paginación, ActivoFormView (crear/editar) con CatalogoSelector + QR preview, ActivoDetailView con ScoreRing + factores + tabs | Componentes nuevos: `ScoreBadge`, `EduScoreRing` (SVG animado), `QrCodeDisplay` (patrón determinístico + canvas PNG), `CatalogoSelector` (chained selects), `MetricCard`, `EduTable` (ui/). Endpoint mock nuevo: `GET /api/v1/activos/:id/plan` con factores del score + tareas por categoría. Actualización en tiempo real vía WebSocket diferida a Fase 7. |
 | 2026-06-13 | 3 | OrdenesListView con chips por estado + contadores + filtros (prioridad/técnico) + paginación, OrdenFormView con buscador de activo y radio-cards de prioridad, OrdenDetailView con timeline de estados + acciones por estado + modales de cierre/reasignación, AlertasView con tres secciones colapsables, UsuariosListView con toggle activo inline, UsuarioFormView con generador de password | Componentes nuevos: `EstadoBadge`, `PrioridadBadge`, `OrdenCard` (ordenes/), `AlertaCard` (alertas/). Mock data ampliada: OTs 5→8 con `historial_estados` + `evidencias`, handler `PATCH /api/v1/ordenes/:id/estado` ahora actualiza el historial; nuevo handler genérico `PATCH /api/v1/ordenes/:id` para reasignación. Store `ordenes` añade método `update()`. Campana del TopNav navega a alertas para el coordinador. Build: 5.09s, 111 entries en precache. |
+| 2026-06-13 | 4 | DashboardDirector con SemaforoChart (donut Chart.js) + MetricCards + HeatmapGrid agrupado por edificio + Top 5 críticos + filtros + auto-refresh 30 s, ProyeccionView con cronograma mensual + cards de totales + sección de candidatos a reemplazo + exportar PDF (window.print + @media print) | Componentes nuevos: `SemaforoChart` (vue-chartjs Doughnut), `HeatmapGrid` (grid agrupado por edificio). Mock dashboard ampliado con `top_criticos` (5 items) y `categorias`; nueva mock `proyeccion.js` con `proyeccionPorAnio` (2026 + 2027) e items con costos + recurrencia. Handler `GET /api/v1/proyeccion` ahora calcula totales. Store `dashboard` expone `topCriticos` y `categorias`. Build: 5.36s, 120 entries en precache. PDF resuelto con `window.print()` para evitar dependencia html2pdf.js. |

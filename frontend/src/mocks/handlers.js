@@ -7,6 +7,7 @@ import { alertas }          from './data/alertas'
 import { dashboardData }    from './data/dashboard'
 import { usuarios }         from './data/usuarios'
 import { instituciones }    from './data/instituciones'
+import { proyeccionPorAnio } from './data/proyeccion'
 
 const delay = (ms = 300) => new Promise(r => setTimeout(r, ms))
 
@@ -274,15 +275,17 @@ export const handlers = [
   // ── Proyección ────────────────────────────────────────────────────────
   http.get('/api/v1/proyeccion', async ({ request }) => {
     await delay()
-    const url   = new URL(request.url)
-    const anio  = parseInt(url.searchParams.get('anio') ?? '2026')
+    const url     = new URL(request.url)
+    const anio    = parseInt(url.searchParams.get('anio') ?? '2026')
+    const fuente  = proyeccionPorAnio[anio] ?? { anio, items: [], estimado_correctivos: 0, candidatos_reemplazo: [] }
+    const total_preventivos = fuente.items.reduce((sum, it) => sum + (it.costo ?? 0), 0)
     return HttpResponse.json({
       anio,
-      items: [],
-      total_preventivos:   0,
-      total_correctivos:   0,
-      total_general:       0,
-      candidatos_reemplazo: [],
+      items: fuente.items,
+      total_preventivos,
+      total_correctivos:    fuente.estimado_correctivos,
+      total_general:        total_preventivos + fuente.estimado_correctivos,
+      candidatos_reemplazo: fuente.candidatos_reemplazo,
     })
   }),
 
