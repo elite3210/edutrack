@@ -276,33 +276,35 @@
 ## Fase 5 — Técnico PWA
 **3 vistas — mobile-first obligatorio**
 
-- [ ] `src/views/tecnico/MisOrdenesView.vue`
-  - [ ] Lista de cards (no tabla) de OTs asignadas, ordenadas por prioridad + fecha límite
-  - [ ] OrdenCard mobile: número OT, activo, tipo, estado badge, días restantes
-  - [ ] Filtro simple: tabs "Pendientes / En ejecución / Cerradas"
-  - [ ] EmptyState con mensaje motivacional si no hay OTs
-  - [ ] Touch targets ≥ 48px en toda la lista
+- [x] `src/views/tecnico/MisOrdenesView.vue`
+  - [x] Lista de cards (no tabla) de OTs asignadas, ordenadas por prioridad + fecha límite
+  - [x] `OrdenCard` mobile (reutilizado de Fase 3) con número, equipo, tipo, badges y días restantes
+  - [x] Filtros con chips horizontales: "Pendientes / En ejecución / Cerradas" con contador por tab
+  - [x] EmptyState contextual por tab (`¡Todo al día!`, `Sin trabajos activos`, `Sin historial`)
+  - [x] Touch targets ≥ 48 px en toda la lista (chips, items, botones)
 
-- [ ] `src/views/tecnico/OrdenDetailTecnico.vue`
-  - [ ] Info del activo: nombre, ubicación, foto de referencia
-  - [ ] Acordeón "Historial del activo": últimas 3 intervenciones
-  - [ ] Descripción de la tarea asignada
-  - [ ] Botón principal lg-mobile: "Iniciar ejecución" (si pendiente/aceptada) o "Ver cierre" (si cerrada)
-  - [ ] Estado "aceptada": botón "Confirmar que estoy en el lugar" antes de ejecutar
+- [x] `src/views/tecnico/OrdenDetailTecnico.vue`
+  - [x] Info del activo: nombre, ubicación, marca/modelo en card compacta
+  - [x] Acordeón "Historial del activo" con últimas 3 intervenciones (lazy fetch al abrir)
+  - [x] Tipo + descripción de la tarea asignada
+  - [x] Botón principal `lg-mobile` sticky bajo gradient: "Confirmar que estoy en el lugar" (pendiente) → "Iniciar ejecución" (aceptada) → "Continuar ejecución" (en_ejecucion) → "Volver" (cerrada)
+  - [x] Badge de fecha límite con coloreado semántico (vencida → danger, ≤2 días → warning)
 
-- [ ] `src/views/tecnico/EjecutarOrdenView.vue`
-  - [ ] **Paso 1 — Verificar equipo:** QrScanner activo + botón "Ingresar código manualmente" como fallback
-  - [ ] QR correcto: checkmark animado + nombre del activo + botón "Continuar"
-  - [ ] QR incorrecto: mensaje de error + reintentar
-  - [ ] **Paso 2 — Evidencias:** EvidenciaUploader (mín. 2 fotos), contador "2 de 2 fotos requeridas"
-  - [ ] FotoCapture abre cámara del dispositivo directamente
-  - [ ] **Paso 3 — Cierre:** textarea "Descripción del trabajo realizado" + timestamp automático + botón "Cerrar orden"
-  - [ ] Confirmación final: modal con resumen + "Confirmar cierre"
-  - [ ] Toda la vista funciona offline: operaciones van a cola IndexedDB
-  - [ ] Componentes: `src/components/shared/`
-    - [ ] `QrScanner.vue`
-    - [ ] `FotoCapture.vue`
-    - [ ] `EvidenciaUploader.vue`
+- [x] `src/views/tecnico/EjecutarOrdenView.vue`
+  - [x] Indicador de 3 pasos (Verificar / Evidencias / Cierre) con estado active + done
+  - [x] **Paso 1 — Verificar equipo:** `QrScanner` con modo cámara (getUserMedia + overlay animado) o modo manual; botón "Simular escaneo (mock)" valida contra `codigo_qr` del activo
+  - [x] QR correcto: tarjeta de éxito con check animado + botón "Continuar"
+  - [x] QR incorrecto: mensaje de error con código esperado + reintentar
+  - [x] **Paso 2 — Evidencias:** `EvidenciaUploader` con `minFotos=2`, contador "2 de 2" y check verde al cumplir
+  - [x] `FotoCapture` usa `<input capture="environment">` con preview + retomar/quitar
+  - [x] **Paso 3 — Cierre:** textarea con contador 500 chars + timestamp automático + banner offline si aplica
+  - [x] Modal de confirmación con resumen (activo, fotos, hora, modo online/offline)
+  - [x] Operación de cierre encolada en IndexedDB (`useOffline.enqueue`) cuando `!navigator.onLine` o si la petición falla
+  - [x] Auto-transición a "en_ejecucion" al entrar si estaba en "aceptada"
+  - [x] Componentes: `src/components/shared/`
+    - [x] `QrScanner.vue` (cámara + manual + simulación)
+    - [x] `FotoCapture.vue` (input capture + preview + retomar/quitar)
+    - [x] `EvidenciaUploader.vue` (slots dinámicos + contador min/max)
 
 ---
 
@@ -374,7 +376,7 @@
 | 2 | Coordinador: Activos | 4 | ✅ Completada |
 | 3 | Coordinador: Órdenes + Alertas + Usuarios | 5 | ✅ Completada |
 | 4 | Director | 2 | ✅ Completada |
-| 5 | Técnico PWA | 3 | ⬜ Pendiente |
+| 5 | Técnico PWA | 3 | ✅ Completada |
 | 6 | Super Admin | 4 | ⬜ Pendiente |
 | 7 | Comunes + pulido | 2 + revisión | ⬜ Pendiente |
 | **Total** | | **23** | |
@@ -419,3 +421,4 @@ Fase 0 ──► Fase 1 ──► Fase 2 ──► Fase 3
 | 2026-06-12 | 2 | DashboardCoordinador con métricas + paneles de alertas/OTs, ActivosListView con filtros + EduTable + paginación, ActivoFormView (crear/editar) con CatalogoSelector + QR preview, ActivoDetailView con ScoreRing + factores + tabs | Componentes nuevos: `ScoreBadge`, `EduScoreRing` (SVG animado), `QrCodeDisplay` (patrón determinístico + canvas PNG), `CatalogoSelector` (chained selects), `MetricCard`, `EduTable` (ui/). Endpoint mock nuevo: `GET /api/v1/activos/:id/plan` con factores del score + tareas por categoría. Actualización en tiempo real vía WebSocket diferida a Fase 7. |
 | 2026-06-13 | 3 | OrdenesListView con chips por estado + contadores + filtros (prioridad/técnico) + paginación, OrdenFormView con buscador de activo y radio-cards de prioridad, OrdenDetailView con timeline de estados + acciones por estado + modales de cierre/reasignación, AlertasView con tres secciones colapsables, UsuariosListView con toggle activo inline, UsuarioFormView con generador de password | Componentes nuevos: `EstadoBadge`, `PrioridadBadge`, `OrdenCard` (ordenes/), `AlertaCard` (alertas/). Mock data ampliada: OTs 5→8 con `historial_estados` + `evidencias`, handler `PATCH /api/v1/ordenes/:id/estado` ahora actualiza el historial; nuevo handler genérico `PATCH /api/v1/ordenes/:id` para reasignación. Store `ordenes` añade método `update()`. Campana del TopNav navega a alertas para el coordinador. Build: 5.09s, 111 entries en precache. |
 | 2026-06-13 | 4 | DashboardDirector con SemaforoChart (donut Chart.js) + MetricCards + HeatmapGrid agrupado por edificio + Top 5 críticos + filtros + auto-refresh 30 s, ProyeccionView con cronograma mensual + cards de totales + sección de candidatos a reemplazo + exportar PDF (window.print + @media print) | Componentes nuevos: `SemaforoChart` (vue-chartjs Doughnut), `HeatmapGrid` (grid agrupado por edificio). Mock dashboard ampliado con `top_criticos` (5 items) y `categorias`; nueva mock `proyeccion.js` con `proyeccionPorAnio` (2026 + 2027) e items con costos + recurrencia. Handler `GET /api/v1/proyeccion` ahora calcula totales. Store `dashboard` expone `topCriticos` y `categorias`. Build: 5.36s, 120 entries en precache. PDF resuelto con `window.print()` para evitar dependencia html2pdf.js. |
+| 2026-06-13 | 5 | MisOrdenesView con tabs + contadores filtrando por `tecnico_id` del auth, OrdenDetailTecnico con acordeón de historial + botón sticky según estado + auto-aceptado al estar en lugar, EjecutarOrdenView con flujo de 3 pasos QR → fotos → cierre, modal de confirmación con resumen, soporte offline vía `useOffline.enqueue` (IndexedDB) | Componentes nuevos en `shared/`: `QrScanner` (cámara con `getUserMedia` + overlay animado + fallback manual + botón simular para mock), `FotoCapture` (input `capture="environment"` + preview + retomar/quitar), `EvidenciaUploader` (slots dinámicos min/max). Touch targets ≥ 48 px, safe areas respetadas. Auto-transición a `en_ejecucion` al iniciar la ejecución desde estado `aceptada`. Build: 5.21s, 132 entries en precache. |
