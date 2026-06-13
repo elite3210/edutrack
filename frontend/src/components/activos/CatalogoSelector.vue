@@ -48,22 +48,24 @@ function sync() {
 
 <template>
   <div class="catalogo-selector">
-    <EduSelect
-      v-model="marca"
-      label="Marca"
-      placeholder="Selecciona una marca"
-      :options="marcaOptions"
-      :disabled="disabled"
-      required
-    />
-    <EduSelect
-      v-model="modeloId"
-      label="Modelo"
-      :placeholder="marca ? 'Selecciona un modelo' : 'Primero elige la marca'"
-      :options="modeloOptions"
-      :disabled="disabled || !marca"
-      required
-    />
+    <div class="catalogo-selects">
+      <EduSelect
+        v-model="marca"
+        label="Marca"
+        placeholder="Selecciona una marca"
+        :options="marcaOptions"
+        :disabled="disabled"
+        required
+      />
+      <EduSelect
+        v-model="modeloId"
+        label="Modelo"
+        :placeholder="marca ? 'Selecciona un modelo' : 'Primero elige la marca'"
+        :options="modeloOptions"
+        :disabled="disabled || !marca"
+        required
+      />
+    </div>
 
     <div v-if="modeloSeleccionado" class="catalogo-preview">
       <div class="catalogo-preview-row">
@@ -92,6 +94,14 @@ function sync() {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+.catalogo-selects {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 480px) {
+  .catalogo-selects { grid-template-columns: 1fr; }
 }
 .catalogo-preview {
   background: var(--color-primary-light);

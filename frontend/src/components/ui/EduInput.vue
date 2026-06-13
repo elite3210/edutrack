@@ -18,7 +18,6 @@ const emit = defineEmits(['update:modelValue'])
       <span v-if="required" class="field-required">*</span>
       {{ label }}
     </label>
-    <p v-if="helper && !error" class="field-helper">{{ helper }}</p>
     <input
       :type="type"
       :value="modelValue"
@@ -28,6 +27,7 @@ const emit = defineEmits(['update:modelValue'])
       @input="emit('update:modelValue', $event.target.value)"
       v-bind="$attrs"
     />
+    <p v-if="helper && !error" class="field-helper">{{ helper }}</p>
     <p v-if="error" class="field-error">⚠ {{ error }}</p>
   </div>
 </template>

@@ -25,7 +25,6 @@ const normalizedOptions = computed(() =>
       <span v-if="required" class="field-required">*</span>
       {{ label }}
     </label>
-    <p v-if="helper && !error" class="field-helper">{{ helper }}</p>
     <div class="select-wrapper">
       <select
         :value="modelValue"
@@ -41,6 +40,7 @@ const normalizedOptions = computed(() =>
       </select>
       <ChevronDownIcon class="select-icon" />
     </div>
+    <p v-if="helper && !error" class="field-helper">{{ helper }}</p>
     <p v-if="error" class="field-error">⚠ {{ error }}</p>
   </div>
 </template>
