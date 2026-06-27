@@ -1,62 +1,199 @@
 # EduTrack AI
 
-> Plataforma SaaS de gestión inteligente del ciclo de vida de activos tecnológicos para instituciones educativas privadas del Perú.
+Plataforma SaaS multi-tenant de gestión inteligente del ciclo de vida de activos tecnológicos para colegios privados del Perú. Un motor denominado **Lifecycle Intelligence Engine** genera planes de mantenimiento desde el catálogo de fabricantes, calcula un score de salud por activo (0–100) y anticipa fallas antes de que ocurran. Los docentes reportan fallas escaneando un código QR desde el celular, sin instalar ninguna app.
 
-**Stack tecnológico:** Python 3.12 · FastAPI · PostgreSQL 16 · SQLAlchemy 2.0 · Alembic · OpenAPI · MCP (FastMCP) · Vue.js (PWA) · Docker · Nginx
-
----
-
-## Tabla de contenido
-
-- [Introducción](#introducción)
-- [1. Concepción de la idea y alcance](#1-concepción-de-la-idea-y-alcance)
-- [2. Objetivos del proyecto](#2-objetivos-del-proyecto)
-- [3. Evaluación del impacto e importancia](#3-evaluación-del-impacto-e-importancia)
-- [4. Antecedentes del problema](#4-antecedentes-del-problema)
-- [5. Estado del arte](#5-estado-del-arte)
-- [6. Análisis del entorno](#6-análisis-del-entorno)
-- [7. Grado de innovación y ventaja comparativa](#7-grado-de-innovación-y-ventaja-comparativa)
-- [8. Obtención y especificación de requisitos de software](#8-obtención-y-especificación-de-requisitos-de-software)
-- [9. Arquitectura de la solución](#9-arquitectura-de-la-solución)
-- [10. Producto mínimo viable](#10-producto-mínimo-viable)
-- [11. Planificación inicial](#11-planificación-inicial)
-- [12. Listado de recursos](#12-listado-de-recursos)
-- [Conclusiones](#conclusiones)
-- [Referencias bibliográficas](#referencias-bibliográficas)
+**Trabajo de Grado — Ingeniería de Sistemas**
 
 ---
 
-## Introducción
+## Estado actual
 
-La gestión de activos tecnológicos en instituciones educativas privadas del Perú enfrenta un problema estructural que afecta directamente la continuidad del proceso académico. Según datos del Ministerio de Educación, Lima Metropolitana concentra más de 5,600 colegios privados, ninguno de los cuales cuenta con un sistema especializado para gestionar el ciclo de vida de sus equipos tecnológicos y de infraestructura. La ausencia de herramientas adecuadas obliga a estas instituciones a operar de forma reactiva, atendiendo las fallas una vez que ya ocurrieron, sin historial de intervenciones, sin trazabilidad y sin capacidad de planificar el presupuesto de mantenimiento con anticipación.
+| Área | Estado |
+|---|---|
+| Sistema de diseño UI | ✅ Completo |
+| Frontend — 24 vistas, 4 roles, PWA navegable | ✅ Completo (prototipo con datos mock) |
+| Backend — FastAPI + PostgreSQL | 🔲 En construcción |
+| Tests — pytest + aislamiento de tenant | 🔲 Pendiente |
+| Despliegue — VPS + Docker Compose + CI/CD | 🔲 Pendiente |
 
-Frente a este problema, el presente documento propone EduTrack AI, una plataforma SaaS web y móvil que permite a las instituciones educativas registrar sus activos tecnológicos y de infraestructura, y obtener de forma automática un plan de mantenimiento basado en los manuales reales de los fabricantes. Un motor de inteligencia artificial denominado Lifecycle Intelligence Engine monitorea el ciclo de vida de cada equipo, calcula su estado de salud en tiempo real, anticipa fallas antes de que ocurran y proyecta el presupuesto de mantenimiento por periodo académico. La plataforma está diseñada específicamente para el contexto educativo peruano, con un modelo de precios accesible y un catálogo de activos preconfigurado que elimina la barrera de adopción que presentan los sistemas genéricos disponibles en el mercado internacional.
+---
 
-Este documento desarrolla la concepción completa del proyecto. Se presenta la idea y su alcance, los objetivos que persigue, la evaluación del impacto e importancia de la solución, los antecedentes del problema con fuentes objetivas que acreditan su existencia, el estado del arte, el análisis del entorno, el grado de innovación, los requisitos de software expresados como historias de usuario en el marco de Scrum, la arquitectura de la solución, el producto mínimo viable que guiará la primera entrega, la planificación inicial y el listado de recursos necesarios para su construcción.
+## Stack tecnológico
 
-## 1. Concepción de la idea y alcance
+| Capa | Tecnología |
+|---|---|
+| **Backend** | Python 3.12 · FastAPI · SQLAlchemy 2.0 async · Alembic · Uvicorn |
+| **Base de datos** | PostgreSQL 16 + pgvector |
+| **Auth** | JWT HS256 (python-jose) · bcrypt (passlib) |
+| **Tiempo real** | WebSockets nativos de FastAPI |
+| **Jobs** | APScheduler (job nocturno a las 2:00 AM) |
+| **Asistente IA** | FastMCP — servidor MCP de solo lectura |
+| **Embeddings RAG** | OpenAI text-embedding-3-small (1536 dims) |
+| **Frontend** | Vue 3 · Vite · Tailwind CSS v4 · Pinia · Vue Router 4 |
+| **PWA** | vite-plugin-pwa · Workbox · IndexedDB (modo offline del técnico) |
+| **Mocks** | MSW v2 (Mock Service Worker) |
+| **Infra** | Docker Compose · Nginx · Ubuntu 22.04 VPS |
+| **CI/CD** | GitHub Actions (rama `prod` despliega, `main` solo testea) |
 
-### 1.1 Descripción general de la solución
+---
 
-EduTrack AI es una plataforma SaaS (Software as a Service) de gestión inteligente de activos educativos orientada a colegios e institutos privados en el Perú. La plataforma combina un catálogo de activos preconfigurado con información técnica real de fabricantes con un Lifecycle Intelligence Engine, un motor de inteligencia artificial que calcula el plan de mantenimiento de cada equipo registrado, monitorea su ciclo de vida, anticipa fallas y proyecta el presupuesto de mantenimiento por periodo académico.
+## Roles del sistema
 
-El sistema opera en dos interfaces complementarias: un panel web para directores, coordinadores de infraestructura y técnicos, y una interfaz móvil optimizada para el reporte rápido de fallas por parte de docentes mediante escaneo de código QR desde el navegador del celular, sin necesidad de instalar ninguna aplicación adicional.
+| Rol | Acceso | Función principal |
+|---|---|---|
+| `super_admin` | Panel global | Gestiona instituciones clientes y el catálogo de fabricantes |
+| `director` | Web (solo lectura ejecutiva) | Dashboard de salud, proyección de presupuesto, asistente IA |
+| `coordinador` | Web (acceso completo) | Registra activos, crea/asigna OTs, consulta historiales |
+| `tecnico` | PWA móvil (offline) | Acepta, ejecuta y cierra OTs con evidencia fotográfica |
+| `docente` | PWA móvil (sin login) | Escanea QR y reporta fallas en menos de 1 minuto |
 
-### 1.2 Problema que resuelve
+---
 
-EduTrack AI resuelve la ausencia de visibilidad real sobre el estado de los activos tecnológicos y de infraestructura en instituciones educativas privadas. Sin un sistema estructurado, las fallas se atienden de forma reactiva, los presupuestos de mantenimiento se definen sin datos confiables y los equipos se reemplazan cuando ya dejaron de funcionar, no cuando el análisis de su ciclo de vida indica que es el momento óptimo para hacerlo.
+## Cómo correr el proyecto
 
-### 1.3 Alcance del sistema
+### Frontend (prototipo con datos mock — sin backend)
 
-La versión inicial del sistema, correspondiente al Producto Mínimo Viable, contempla las siguientes funcionalidades:
+```bash
+cd frontend
+npm install
+npm run dev
+# Abrir http://localhost:5173
+# VITE_USE_MOCK=true en frontend/.env (activado por defecto)
+```
 
-- Registro de activos educativos con generación automática del plan de mantenimiento basado en especificaciones del fabricante.
-- Reporte de fallas por parte del docente mediante escaneo de código QR desde el celular.
-- Generación y asignación de órdenes de trabajo hacia técnicos internos o proveedores externos.
-- Captura de evidencia fotográfica y cierre digital de intervenciones por el técnico de campo.
-- Dashboard de estado de salud de activos con indicadores por equipo, aula y categoría.
-- Proyección de presupuesto de mantenimiento y reemplazo para el año escolar.
-- Historial completo de intervenciones por activo.
-- Servidor MCP (Model Context Protocol) que expone las herramientas de consulta del sistema al asistente de inteligencia artificial.
+Usuarios de prueba disponibles en el login (solo para el prototipo con datos mock — no son credenciales reales de producción):
 
-Quedan fuera del alcance del PMV la integración con sistemas de matrícula como SIAGIE, la gestión financiera del colegio, el módulo de múltiples sedes y la incorporación de activos fuera del rango tecnológico y HVAC básico. Estas funcionalidades forman parte de la hoja de ruta de escalabilidad del producto en versiones posteriores.
+| Email | Contraseña | Rol |
+|---|---|---|
+| `coordinador@sanmarcos.pe` | `123456` | Coordinador |
+| `director@sanmarcos.pe` | `123456` | Director |
+| `tecnico1@sanmarcos.pe` | `123456` | Técnico |
+| `admin@edutrack.pe` | `123456` | Super Admin |
+
+### Integración local frontend + backend (cuando el backend esté construido)
+
+```bash
+# Terminal 1 — Base de datos
+docker compose up -d db
+
+# Terminal 2 — Backend
+cd backend
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# Terminal 3 — Frontend apuntando al backend real
+# Editar frontend/.env → VITE_USE_MOCK=false
+cd frontend
+npm run dev
+```
+
+### Comandos del backend
+
+```bash
+cd backend
+pytest                                     # todos los tests
+pytest --cov=app --cov-report=term-missing # con cobertura
+ruff check . && ruff format .              # lint y formato
+alembic upgrade head                       # aplicar migraciones
+alembic revision --autogenerate -m ""      # nueva migración
+python -m scripts.seed                     # cargar datos demo
+```
+
+---
+
+## Estructura del repositorio
+
+```
+edutrack/
+├── frontend/                  ← Vue 3 PWA — prototipo completo
+│   ├── src/
+│   │   ├── views/             # 24 vistas organizadas por rol
+│   │   ├── components/        # componentes UI reutilizables
+│   │   ├── stores/            # Pinia: auth, activos, ordenes, alertas...
+│   │   ├── composables/       # useApi, useWebSocket, useOffline, useNotifMeta
+│   │   ├── api/               # capa de servicios (apunta a /api/v1/*)
+│   │   └── mocks/             # MSW handlers + data dummy
+│   └── public/                # manifest PWA, iconos
+│
+├── backend/                   ← FastAPI — por construir (ver docs/09-PLAN-BACKEND.md)
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── core/              # config, database, security, deps
+│   │   ├── models/            # SQLAlchemy 2.0 (1 archivo por entidad, 16 tablas)
+│   │   ├── schemas/           # Pydantic XxxCreate / XxxUpdate / XxxOut
+│   │   ├── api/v1/            # routers: auth, activos, ordenes, alertas, dashboard...
+│   │   ├── services/          # lifecycle_engine, score, qr, evidencia, rag, proyeccion
+│   │   ├── mcp/               # FastMCP server + 4 herramientas de solo lectura
+│   │   └── jobs/              # APScheduler nightly job
+│   ├── alembic/               # migraciones de BD
+│   ├── tests/                 # pytest (espeja la estructura de app/)
+│   └── scripts/               # seed.py, backup.sh
+│
+├── docs/                      # documentación completa
+│   ├── 01-PRD.md              # historias de usuario y criterios de aceptación
+│   ├── 02-ARQUITECTURA.md     # modelo de datos, decisiones técnicas
+│   ├── 03-PLAN-DE-TAREAS.md   # backlog ejecutable — estado actual del proyecto
+│   ├── 04-ESTANDARES-DE-CODIGO.md
+│   ├── 05-FLUJO-DE-TRABAJO.md
+│   ├── 06-DISEÑO-UI.md        # tokens de color, tipografía, componentes
+│   ├── 07-PLAN-TRABAJO-FRONTEND.md  # checklist de las 24 vistas (completado)
+│   ├── 09-PLAN-BACKEND.md     # plan de implementación — 9 fases
+│   ├── 10-PLAN-TESTS.md       # plan de tests por fase
+│   └── 11-PLAN-DESPLIEGUE.md  # VPS + Docker Compose + CI/CD
+│
+├── docker-compose.yml         # entorno de desarrollo (servicio db)
+├── CLAUDE.md                  # memoria del proyecto para Claude Code
+└── README.md                  # este archivo
+```
+
+---
+
+## Documentación
+
+| Documento | Descripción |
+|---|---|
+| [`docs/01-PRD.md`](docs/01-PRD.md) | Requisitos del producto — 11 historias de usuario con criterios de aceptación |
+| [`docs/02-ARQUITECTURA.md`](docs/02-ARQUITECTURA.md) | Arquitectura técnica, modelo de datos (16 tablas), decisiones de diseño |
+| [`docs/03-PLAN-DE-TAREAS.md`](docs/03-PLAN-DE-TAREAS.md) | Backlog ejecutable — estado actual de todas las tareas |
+| [`docs/06-DISEÑO-UI.md`](docs/06-DISEÑO-UI.md) | Sistema de diseño: tokens, tipografía, componentes, layouts por rol |
+| [`docs/09-PLAN-BACKEND.md`](docs/09-PLAN-BACKEND.md) | Plan del backend: 9 fases con tareas atómicas y tablas de BD |
+| [`docs/10-PLAN-TESTS.md`](docs/10-PLAN-TESTS.md) | Plan de tests: fixtures, casos por fase, comandos pytest |
+| [`docs/11-PLAN-DESPLIEGUE.md`](docs/11-PLAN-DESPLIEGUE.md) | Despliegue en VPS Ubuntu con Docker Compose y CI/CD GitHub Actions |
+
+---
+
+## Modelo de datos (resumen)
+
+16 tablas en PostgreSQL. Todas las tablas operativas tienen `institucion_id` para el aislamiento multi-tenant.
+
+`institucion` · `usuario` · `api_token` · `catalogo_modelo` · `regla_mantenimiento` · `activo` · `plan_mantenimiento` · `reporte_falla` · `orden_trabajo` · `evidencia` · `historial_ot` · `score_salud` · `alerta` · `notificacion` · `mcp_audit_log` · `documento_rag`
+
+---
+
+## Historias de usuario del PMV
+
+| ID | Historia | Estado backend |
+|---|---|---|
+| HU-01 | Registro de activo con plan automático | 🔲 |
+| HU-02 | Reporte de falla por QR (docente) | 🔲 |
+| HU-03 | Alertas automáticas de mantenimiento | 🔲 |
+| HU-04 | Creación y asignación de OT | 🔲 |
+| HU-05 | Ejecución y cierre de OT por técnico | 🔲 |
+| HU-06 | Historial de intervenciones | 🔲 |
+| HU-07 | Dashboard ejecutivo del director | 🔲 |
+| HU-08 | Proyección de presupuesto | 🔲 |
+| HU-09 | Score de salud por activo | 🔲 |
+| HU-10 | Administración del SaaS (super_admin) | 🔲 |
+| HU-11 | Servidor MCP del asistente IA | 🔲 |
+| HU-12 | Centro de notificaciones in-app | 🔲 |
+
+Todas las HU tienen su prototipo de interfaz completado. El backend está por implementarse.
+
+---
+
+## Convenciones del proyecto
+
+- **Idioma del código:** inglés (variables, funciones, modelos)
+- **Idioma de la documentación:** español (comentarios, docstrings, mensajes de error)
+- **Commits:** Conventional Commits en español (`feat:`, `fix:`, `test:`, `docs:`)
+- **Ramas:** `main` → desarrollo (solo tests en CI) · `prod` → producción (deploy automático)
+- **Multi-tenant:** toda consulta filtra por `institucion_id` del JWT — sin excepciones
